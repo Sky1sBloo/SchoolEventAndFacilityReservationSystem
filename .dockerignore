@@ -1,0 +1,12 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+
+Dockerfile*
+docker-compose.yml
+**/*.md
+.env
+.git/
+.vscode/
+*.user

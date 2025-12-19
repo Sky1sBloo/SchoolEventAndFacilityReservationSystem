@@ -1,0 +1,27 @@
+services:
+  sql_server:
+    image: "mcr.microsoft.com/mssql/server:2025-latest"
+    container_name: sfers_db 
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD} 
+    ports: 
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  webapp:
+    build: .
+    container_name: sfers_webapp
+    depends_on:
+      - sql_server
+    ports:
+      - 5116:5116
+    environment:
+      ASPNETCORE_URLS: http://+:5116
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__SFERS_Db: "Server=sql_server,1433;Database=sfers_db;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+
+
+volumes:
+  sql_data:

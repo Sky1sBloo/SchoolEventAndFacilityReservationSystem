@@ -16,10 +16,10 @@ services:
     depends_on:
       - sql_server
     ports:
-      - 5116:5116
+      - 8080:8080
     environment:
-      ASPNETCORE_URLS: http://+:5116
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__SFERS_Db: "Server=sql_server,1433;Database=sfers_db;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
 
 

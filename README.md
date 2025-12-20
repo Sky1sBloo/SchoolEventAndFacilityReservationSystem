@@ -14,19 +14,21 @@ dotnet build
 dotnet run --project ./SFERS/SFERS.csproj
 ```
 
-### Database with docker
+### Setup with docker
 1. Start and build container 
 ```
 docker compose up --build
 ```
-2. To shutdown
+2. The respective database and webapp with be shown in the terminal
+> See `docker-compose.yml` for ports
+3. To shutdown
 ```
 docker compose down
 ```
 
 ### Start migrations
 1. Request the connection string from the developers
-2. Add the user secrets
+2. Add the user secrets **(you only need to do this once)**
 ```
 dotnet user-secrets set "ConnectionStrings:SFERS_Db" <connection string>
 ```
@@ -34,7 +36,7 @@ dotnet user-secrets set "ConnectionStrings:SFERS_Db" <connection string>
 ```
 docker compose up
 ```
-4. The database is now port forwarded in `localhost:1433`. You can update the db with just
+4. The database is now port forwarded to localhost (see `docker-compose.yml` for ports). You can update the db with just
 ```
 dotnet ef database update --project ./SFERS/SFERS.csproj
 ```

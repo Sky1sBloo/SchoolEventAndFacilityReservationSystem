@@ -1,48 +1,92 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿<!DOCTYPE html >
+<html lang="en" >
+<head >
+<meta charset="utf-8" / >
+<meta name="viewport" content="width=device-width, initial-scale=1.0" / >
+<title > @ViewData["Title"] - School Facility System</title >
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" >
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" >
+<style >
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
 }
 
-a {
-  color: #0077cc;
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.navbar {
+    background-color: var(--primary-color);
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.nav-link {
+    color: rgba(255,255,255,0.8) !important;
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    .nav-link.active {
+        color: #fff !important;
+        font-weight: bold;
+    }
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 12px;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+footer {
+    background-color: var(--primary-color);
+    color: white;
+    margin-top: auto;
 }
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
+</style >
+</head >
+<body class="d-flex flex-column min-vh-100" >
+<header >
+<nav class="navbar navbar-expand-sm navbar-dark box-shadow mb-3" >
+<div class="container" >
+<a class="navbar-brand" href="/" > SchoolRes</a >
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" >
+<span class="navbar-toggler-icon" > </span >
+</button >
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" >
+<ul class="navbar-nav flex-grow-1" >
+<li class="nav-item" > <a class="nav-link" href="#" > Dashboard</a > </li >
+<li class="nav-item" > <a class="nav-link" href="#" > Reservations</a > </li >
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
-}
+<li class="nav-item border-start ps-3 ms-2" > </li > <li class="nav-item" > <a class="nav-link" asp-controller="Rooms" asp-action="Index" > Rooms</a > </li >
+<li class="nav-item" > <a class="nav-link" asp-controller="Equipment" asp-action="Index" > Equipment</a > </li >
+<li class="nav-item" > <a class="nav-link" asp-controller="Analytics" asp-action="Index" > Analytics</a > </li >
+</ul >
+<ul class="navbar-nav" >
+<li class="nav-item" >
+<a class="nav-link" asp-controller="Profile" asp-action="Index" >
+<i class="fas fa-user-circle" > </i > Profile
+</a >
+</li >
+</ul >
+</div >
+</div >
+</nav >
+</header >
+
+<div class="container" >
+<main role="main" class="pb-3" >
+@RenderBody()
+</main >
+</div >
+
+<footer class="border-top footer text-muted py-3" >
+<div class="container text-center text-white" >
+&copy; 2025 - School Facility Reservation System - <a href="#" class="text-white" > Privacy</a >
+</div >
+</footer >
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" > </script >
+<script src="https://cdn.jsdelivr.net/npm/chart.js" > </script >
+@await RenderSectionAsync("Scripts", required: false)
+</body >
+</html >

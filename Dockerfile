@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /app
 
@@ -8,9 +8,9 @@ RUN dotnet restore SFERS.csproj
 COPY SFERS/ ./
 RUN dotnet publish SFERS.csproj -c Release -o /out
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /out .
 
-EXPOSE 5116
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "SFERS.dll"]

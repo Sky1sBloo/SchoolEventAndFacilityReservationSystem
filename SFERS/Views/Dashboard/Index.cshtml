@@ -1,0 +1,175 @@
+﻿@model SFERS.Models.DashboardStatsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card {
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .display-4 {
+            font-weight: 700;
+            font-size: 3rem;
+        }
+
+    .content-card {
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: none;
+    }
+
+        .content-card .card-header {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+
+    .notification-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.2s;
+    }
+
+        .notification-item:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+    .badge {
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+    }
+</style>
+
+<!-- Added gradient header with improved styling -->
+<div class="dashboard-header d-flex justify-content-between flex-wrap align-items-center">
+    <div>
+        <h1 class="h2 mb-2">Dashboard</h1>
+        <p class="mb-0 opacity-90">Welcome back! Here's your reservation overview.</p>
+    </div>
+    <a asp-controller="Reservations" asp-action="Create" class="btn btn-light btn-lg mt-3 mt-md-0">
+        <i class="fas fa-plus me-2"></i> New Reservation
+    </a>
+</div>
+
+<!-- Enhanced stat cards with better hover effects and styling -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card text-white bg-primary mb-3">
+            <div class="card-body text-center py-4">
+                <h5 class="card-title mb-3">Upcoming</h5>
+                <p class="card-text display-4 mb-0">@Model.UpcomingReservations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card text-white bg-success mb-3">
+            <div class="card-body text-center py-4">
+                <h5 class="card-title mb-3">Completed</h5>
+                <p class="card-text display-4 mb-0">@Model.CompletedBookings</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-light mb-3" style="border: 2px solid #667eea;">
+            <div class="card-body text-center py-4">
+                <h5 class="card-title mb-3 text-primary">Next Booking</h5>
+                <p class="card-text fs-4 mb-0 text-dark fw-bold">@Model.NextBookingTime</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card content-card">
+            <div class="card-header">
+                <i class="fas fa-calendar-check me-2"></i>Recent Reservations
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Room</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentActivity!)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-semibold">@item.RoomName</td>
+                                <td>
+                                    @item.Date.ToShortDateString()
+                                    <br><small class="text-muted">@item.TimeSlot</small>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Approved")
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Approved
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card content-card mb-3">
+            <div class="card-header">
+                <i class="fas fa-bell me-2"></i>Notifications
+            </div>
+            <div class="card-body p-0">
+                <!-- Changed "AV Room" to "Laboratory" since AV Room doesn't exist -->
+                <div class="notification-item">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    Your booking for <strong>Laboratory</strong> was approved.
+                </div>
+                <div class="notification-item text-muted">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    System maintenance scheduled for Friday.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

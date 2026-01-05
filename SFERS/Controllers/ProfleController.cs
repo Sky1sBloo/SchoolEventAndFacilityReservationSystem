@@ -7,12 +7,16 @@ namespace SFERS.Controllers
     {
         public IActionResult Index()
         {
-            // MOCK DATA: Simulate the currently logged-in user
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var userProfile = new UserProfileViewModel
             {
                 FullName = "John Doe",
                 Role = "Student Admin",
-                Email = "john.doe@school.edu",
+                Email = HttpContext.Session.GetString("UserEmail") ?? "john.doe@school.edu",
                 Username = "jdoe2025"
             };
 
@@ -22,9 +26,12 @@ namespace SFERS.Controllers
         [HttpPost]
         public IActionResult UpdatePassword(string currentPassword, string newPassword)
         {
-            // Logic to update password would go here
-            // _authService.ChangePassword(User.Identity.Name, currentPassword, newPassword);
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
+            // Logic to update password would go here
             TempData["Message"] = "Password updated successfully!";
             return RedirectToAction("Index");
         }

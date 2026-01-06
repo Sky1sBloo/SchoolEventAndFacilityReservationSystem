@@ -62,11 +62,14 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Reservations</a></li>
+                        @* Removed duplicate Dashboard and Reservations links that pointed to # *@
 
-                        <li class="nav-item border-start border-secondary ps-3 ms-2"></li>
-
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Reservations" asp-action="Index">Reservations</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Rooms" asp-action="Index">Rooms</a>
                         </li>
@@ -91,6 +94,15 @@
     </header>
 
     <div class="container">
+        @* Added success message display for registration *@
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Message"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -98,14 +110,14 @@
 
     <footer class="border-top footer py-3 mt-auto">
         <div class="container text-center">
-            <small>&copy; 2025 - School Facility Reservation System - <a href="#" class="text-white text-decoration-none">Privacy Policy</a></small>
+            &copy; 2025 - School Facility Reservation System - <a href="#" class="text-decoration-none text-white-50">Privacy Policy</a>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    @* This allows individual pages to add their own scripts (like the Charts in Analytics) *@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+

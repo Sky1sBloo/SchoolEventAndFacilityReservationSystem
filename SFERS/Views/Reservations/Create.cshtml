@@ -1,0 +1,91 @@
+﻿@model SFERS.Models.ReservationViewModel
+@{
+    ViewData["Title"] = "Book a Room";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">New Reservation</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @* Added validation summary *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Room</label>
+                                @* Updated room names to match Designer 2 *@
+                                <select class="form-select" asp-for="RoomName" required>
+                                    <option value="">Choose a room...</option>
+                                    <option>Auditorium</option>
+                                    <option>Laboratory</option>
+                                    <option>Room 3</option>
+                                    <option>Room 4</option>
+                                    <option>Room 5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" asp-for="Date" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Time Slot</label>
+                            <select class="form-select" asp-for="TimeSlot" required>
+                                <option value="">Choose a time slot...</option>
+                                <option>08:00 AM - 10:00 AM</option>
+                                <option>10:00 AM - 12:00 PM</option>
+                                <option>01:00 PM - 03:00 PM</option>
+                                <option>03:00 PM - 05:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Equipment Needed (Optional)</label>
+                            @* Updated equipment names to match Designer 2 *@
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="TV" id="projector">
+                                <label class="form-check-label" for="TV">TV</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Epson Pro Projector" id="projector">
+                                <label class="form-check-label" for="projector">Epson Pro Projector</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="JBL PartyBox" id="sound">
+                                <label class="form-check-label" for="sound">JBL PartyBox</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Shure Wireless Mic" id="mic">
+                                <label class="form-check-label" for="mic">Shure Wireless Mic</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Lenovo Thinkpad T1" id="laptop">
+                                <label class="form-check-label" for="laptop">Lenovo Thinkpad T1</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="Whiteboard" id="projector">
+                                <label class="form-check-label" for="board">Whiteboard</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Purpose of Reservation</label>
+                            <textarea class="form-control" rows="3" asp-for="Purpose" placeholder="e.g., Class presentation for Biology 101" required></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Submit Request</button>
+                            <a asp-action="Index" class="btn btn-link text-muted">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

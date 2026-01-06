@@ -8,7 +8,11 @@ namespace SFERS.Controllers
     {
         public IActionResult Index()
         {
-            // MOCK DATA
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var equipmentList = new List<EquipmentViewModel>
             {
                 new EquipmentViewModel { Name = "Epson Pro Projector", Category = "Projector", AssignedRoom = "Auditorium", Status = "Available" },
@@ -16,9 +20,6 @@ namespace SFERS.Controllers
                 new EquipmentViewModel { Name = "Lenovo Thinkpad T1", Category = "Laptop", AssignedRoom = "Library Storage", Status = "Maintenance" },
                 new EquipmentViewModel { Name = "JBL PartyBox", Category = "Audio", AssignedRoom = "Auditorium", Status = "Available" }
             };
-
-            // TODO: DATABASE CHANGE
-            // var equipmentList = _context.Equipment.ToList();
 
             return View(equipmentList);
         }

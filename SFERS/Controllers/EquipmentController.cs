@@ -1,7 +1,7 @@
+
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFERS.Models;
-using System.Collections.Generic;
+using SFERS.Models.ViewModel;
 
 namespace SFERS.Controllers
 {

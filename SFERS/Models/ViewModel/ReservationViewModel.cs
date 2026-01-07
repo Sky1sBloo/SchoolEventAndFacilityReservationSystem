@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SFERS.Models
+namespace SFERS.Models.ViewModel
 {
     // --- RESERVATION MODELS ---
     public class DashboardStatsViewModel

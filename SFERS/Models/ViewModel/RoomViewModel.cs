@@ -1,21 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace SFERS.Models
+﻿//using System.Collections.Generic;
+namespace SFERS.Models.ViewModel
 {
     public class RoomViewModel
     {
         public int Id { get; set; }
-        public string? Name { get; set; } // Added ?
-        public int Capacity { get; set; }
-        public List<string>? Equipment { get; set; } // Added ?
-        public bool IsAvailable { get; set; }
-    }
 
-    public class EquipmentViewModel
-    {
-        public string? Category { get; set; } // Added ?
-        public string? Name { get; set; } // Added ?
-        public string? AssignedRoom { get; set; } // Added ?
-        public string? Status { get; set; } // Added ?
+        // Fix: Initialize Name
+        public string Name { get; set; } = string.Empty;
+
+        public int Capacity { get; set; }
+        public bool IsAvailable { get; set; }
+
+        // Fix: Initialize the list so it is never null
+        public List<string> Equipment { get; set; } = new List<string>();
     }
 }

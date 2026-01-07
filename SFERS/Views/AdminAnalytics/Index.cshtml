@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Data Governance";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fs-6">Report Configurations</h5>
+                <button class="btn btn-sm btn-light py-0">+</button>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Monthly Usage (PDF)
+                    <div>
+                        <i class="fas fa-edit text-primary cursor-pointer"></i>
+                        <i class="fas fa-trash text-danger ms-2 cursor-pointer"></i>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Damaged Equip. List
+                    <div>
+                        <i class="fas fa-edit text-primary cursor-pointer"></i>
+                        <i class="fas fa-trash text-danger ms-2 cursor-pointer"></i>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Manual Log Entry (Data Correction)</h5>
+            </div>
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Room</label>
+                        <select class="form-select"><option>Auditorium</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Hours Used</label>
+                        <input type="number" class="form-control" placeholder="e.g. 2.5">
+                    </div>
+                    <div class="col-12 text-end">
+                        <button class="btn btn-warning text-dark">
+                            <i class="fas fa-plus-circle me-1"></i> Inject Historical Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">Raw Reservation Logs</div>
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Log ID</th>
+                    <th>Room</th>
+                    <th>Timestamp</th>
+                    <th>Duration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>#99231</td>
+                    <td>Lab 1</td>
+                    <td>2025-01-08 14:00</td>
+                    <td>2 hrs</td>
+                    <td><button class="btn btn-sm btn-danger py-0">Delete Log</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

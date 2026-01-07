@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
-using SFERS.Models;
+using SFERS.Models.ViewModel;
 using SFERS.Models.Entities;
 using SFERS.Utilities;
 using System.Security.Claims;

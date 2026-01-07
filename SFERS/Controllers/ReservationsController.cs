@@ -18,23 +18,11 @@ namespace SFERS.Controllers
             return View(reservations);
         }
 
-        public IActionResult Create()
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         public IActionResult Create(ReservationViewModel model)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -47,11 +35,6 @@ namespace SFERS.Controllers
 
         public IActionResult Calendar()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             // Pass reservation data to calendar view
             var reservations = new List<ReservationViewModel>
             {

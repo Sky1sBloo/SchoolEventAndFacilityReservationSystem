@@ -23,11 +23,6 @@ namespace SFERS.Controllers
         [HttpPost]
         public IActionResult UpdatePassword(string currentPassword, string newPassword)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             // Logic to update password would go here
             TempData["Message"] = "Password updated successfully!";
             return RedirectToAction("Index");

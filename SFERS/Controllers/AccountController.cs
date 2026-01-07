@@ -91,7 +91,7 @@ namespace SFERS.Controllers
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match. Please try again.");
                 return View(model);
             }
-            var defaultRole = dbContext.Roles.FirstOrDefault(r => r.Name == "Student");
+            var defaultRole = dbContext.Roles.FirstOrDefault(r => r.Name == "User");
             if (defaultRole == null)
             {
                 ModelState.AddModelError("", "System error: Default role not found.");

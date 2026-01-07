@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
 using SFERS.Models;
 using SFERS.Models.Entities;
 using SFERS.Utilities;
+using System.Security.Claims;
 
 namespace SFERS.Controllers
 {
@@ -20,69 +23,44 @@ namespace SFERS.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
-            {
-                ModelState.AddModelError("", "Please enter both email and password.");
-                return View(model);
-            }
-
-            if (!model.Email.Contains("@") || !model.Email.Contains("."))
-            {
-                ModelState.AddModelError("Email", "Please enter a valid email address.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Password) || model.Password.Length < 6)
-            {
-                ModelState.AddModelError("Password", "Password must be at least 6 characters.");
-                return View(model);
-            }
-
-            // Set session to track logged-in user
             var account = dbContext.Accounts.Include(a => a.Role)
                 .FirstOrDefault(a => a.Email == model.Email);
 
             if (account != null && PasswordManager.VerifyPassword(model.Password, account.Password))
             {
-                HttpContext.Session.SetString("UserRole", account.Role.Name);
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
+                    new Claim(ClaimTypes.Email, account.Email),
+                    new Claim(ClaimTypes.Name, account.FullName),
+                    new Claim(ClaimTypes.Role, account.Role.Name)
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                 return RedirectToAction("Index", "Dashboard");
             }
-            ModelState.AddModelError("", "Invalid email or password. Please check your credentials.");
+            ModelState.AddModelError("", "Invalid email or password.");
             return View(model);
         }
 
         public IActionResult Register() => View();
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
-            }
-
-            if (string.IsNullOrWhiteSpace(model.FullName))
-            {
-                ModelState.AddModelError("FullName", "Please enter your full name.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Email) || !model.Email.Contains("@") || !model.Email.Contains("."))
-            {
-                ModelState.AddModelError("Email", "Please enter a valid email address (e.g., name@school.edu).");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model?.Password) || model.Password.Length < 6)
-            {
-                ModelState.AddModelError("Password", "Password must be at least 6 characters long.");
                 return View(model);
             }
 
@@ -106,16 +84,16 @@ namespace SFERS.Controllers
                 RoleId = defaultRole.Id,
                 Role = defaultRole
             };
-            dbContext.Accounts.Add(account);
+            await dbContext.Accounts.AddAsync(account);
             dbContext.SaveChanges();
 
             TempData["Message"] = "Registration successful! Please login with your credentials.";
             return RedirectToAction("Login");
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
     }

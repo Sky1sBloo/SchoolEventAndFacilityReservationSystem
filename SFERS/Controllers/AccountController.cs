@@ -47,7 +47,7 @@ namespace SFERS.Controllers
 
             // Set session to track logged-in user
             var account = dbContext.Accounts.Include(a => a.Role)
-                .FirstOrDefault(a => a.Username == model.Email);
+                .FirstOrDefault(a => a.Email == model.Email);
 
             if (account != null && PasswordManager.VerifyPassword(model.Password, account.Password))
             {
@@ -91,17 +91,20 @@ namespace SFERS.Controllers
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match. Please try again.");
                 return View(model);
             }
-            var defaultRole = dbContext.Roles.FirstOrDefault(r => r != null && r.Name == "Student",
-                null) ?? new Role { Name = "Role", Description = "User role" };
+            var defaultRole = dbContext.Roles.FirstOrDefault(r => r.Name == "Student");
+            if (defaultRole == null)
+            {
+                ModelState.AddModelError("", "System error: Default role not found.");
+                return View(model);
+            }
 
             var account = new Account
             {
-                Username = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
                 Password = PasswordManager.HashPassword(model.Password),
                 RoleId = defaultRole.Id,
-                Role = defaultRole,
-                Email = model.Email,
-                FullName = model.FullName
+                Role = defaultRole
             };
             dbContext.Accounts.Add(account);
             dbContext.SaveChanges();

@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFERS.Models;
 using System.Collections.Generic;
 
 namespace SFERS.Controllers
 {
+    [Authorize]
     public class EquipmentController : Controller
     {
         public IActionResult Index()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var equipmentList = new List<EquipmentViewModel>
             {
                 new EquipmentViewModel { Name = "Epson Pro Projector", Category = "Projector", AssignedRoom = "Auditorium", Status = "Available" },

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations;
 namespace SFERS.Models
 {
     // --- AUTHENTICATION MODELS ---
@@ -35,23 +34,11 @@ namespace SFERS.Models
         public string? ConfirmPassword { get; set; }
     }
 
-    // --- RESERVATION MODELS ---
-    public class DashboardStatsViewModel
+    public class UserProfileViewModel
     {
-        public int UpcomingReservations { get; set; }
-        public int CompletedBookings { get; set; }
-        public string? NextBookingTime { get; set; }
-        public List<ReservationViewModel>? RecentActivity { get; set; }
-    }
-
-    public class ReservationViewModel
-    {
-        public int Id { get; set; }
-        public string? RoomName { get; set; }
-        public DateTime Date { get; set; }
-        public string? TimeSlot { get; set; }
-        public string? Purpose { get; set; }
-        public string? Status { get; set; }
-        public string? EquipmentRequested { get; set; }
+        public string? FullName { get; set; } // Added ?
+        public string? Role { get; set; } // Added ?
+        public string? Email { get; set; } // Added ?
+        public string? Username { get; set; } // Added ?
     }
 }

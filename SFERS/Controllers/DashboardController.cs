@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFERS.Models;
 
 namespace SFERS.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         public IActionResult Index()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             // Mock Data for the Dashboard - Updated room names to match Designer 2
             var stats = new DashboardStatsViewModel
             {

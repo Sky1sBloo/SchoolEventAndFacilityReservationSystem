@@ -10,7 +10,6 @@ namespace SFERS.Controllers
 
     public class AccountController : Controller
     {
-        private static Dictionary<string, string> RegisteredUsers = new Dictionary<string, string>();
         private readonly ApplicationDbContext dbContext;
 
         public AccountController(ApplicationDbContext context)
@@ -43,18 +42,6 @@ namespace SFERS.Controllers
             if (string.IsNullOrEmpty(model.Password) || model.Password.Length < 6)
             {
                 ModelState.AddModelError("Password", "Password must be at least 6 characters.");
-                return View(model);
-            }
-
-            if (!RegisteredUsers.ContainsKey(model.Email.ToLower()))
-            {
-                ModelState.AddModelError("", "No account found with this email. Please register first.");
-                return View(model);
-            }
-
-            if (RegisteredUsers[model.Email.ToLower()] != model.Password)
-            {
-                ModelState.AddModelError("", "Invalid email or password. Please check your credentials.");
                 return View(model);
             }
 
@@ -93,12 +80,6 @@ namespace SFERS.Controllers
                 return View(model);
             }
 
-            if (RegisteredUsers.ContainsKey(model.Email.ToLower()))
-            {
-                ModelState.AddModelError("Email", "This email is already registered. Please login or use a different email.");
-                return View(model);
-            }
-
             if (string.IsNullOrEmpty(model?.Password) || model.Password.Length < 6)
             {
                 ModelState.AddModelError("Password", "Password must be at least 6 characters long.");
@@ -119,6 +100,8 @@ namespace SFERS.Controllers
                 Password = PasswordManager.HashPassword(model.Password),
                 RoleId = defaultRole.Id,
                 Role = defaultRole,
+                Email = model.Email,
+                FullName = model.FullName
             };
             dbContext.Accounts.Add(account);
             dbContext.SaveChanges();

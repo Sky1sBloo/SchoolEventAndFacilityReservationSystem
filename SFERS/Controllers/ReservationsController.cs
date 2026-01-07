@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFERS.Models;
 
 namespace SFERS.Controllers
 {
+    [Authorize]
     public class ReservationsController : Controller
     {
         public IActionResult Index()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var reservations = new List<ReservationViewModel>
             {
                 new ReservationViewModel { Id=1, RoomName = "Auditorium", Date = DateTime.Now, Status = "Ongoing", TimeSlot = "8:00 AM - 5:00 PM", Purpose="School Assembly" },

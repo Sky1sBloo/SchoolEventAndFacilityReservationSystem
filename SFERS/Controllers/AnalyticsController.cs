@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SFERS.Controllers
 {
+    [Authorize]
     public class AnalyticsController : Controller
     {
-        public IActionResult Index()
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            return View();
-        }
+        public IActionResult Index() => View();
 
         [HttpGet]
         public IActionResult GetUsageData()

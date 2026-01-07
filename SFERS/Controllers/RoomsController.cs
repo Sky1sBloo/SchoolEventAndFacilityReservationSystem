@@ -24,11 +24,6 @@ namespace SFERS.Controllers
 
         public IActionResult Details(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("IsLoggedIn")))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var room = new RoomViewModel
             {
                 Id = id,

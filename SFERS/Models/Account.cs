@@ -9,6 +9,4 @@ public class Account
     public required string Password { get; set; } 
     public int RoleId { get; set; }
     public required Role Role { get; set; }
-    
-    // Add other fields as needed (if may maisip)
 }

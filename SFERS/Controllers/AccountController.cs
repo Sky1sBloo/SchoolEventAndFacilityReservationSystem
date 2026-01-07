@@ -1,11 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SFERS.Data;
 using SFERS.Models;
+using SFERS.Models.Entities;
+using SFERS.Utilities;
 
 namespace SFERS.Controllers
 {
+
     public class AccountController : Controller
     {
         private static Dictionary<string, string> RegisteredUsers = new Dictionary<string, string>();
+        private readonly ApplicationDbContext dbContext;
+
+        public AccountController(ApplicationDbContext context)
+        {
+            dbContext = context;
+        }
 
         public IActionResult Login() => View();
 
@@ -29,7 +40,7 @@ namespace SFERS.Controllers
                 return View(model);
             }
 
-            if (model.Password.Length < 6)
+            if (string.IsNullOrEmpty(model.Password) || model.Password.Length < 6)
             {
                 ModelState.AddModelError("Password", "Password must be at least 6 characters.");
                 return View(model);
@@ -48,10 +59,16 @@ namespace SFERS.Controllers
             }
 
             // Set session to track logged-in user
-            HttpContext.Session.SetString("IsLoggedIn", "true");
-            HttpContext.Session.SetString("UserEmail", model.Email);
+            var account = dbContext.Accounts.Include(a => a.Role)
+                .FirstOrDefault(a => a.Username == model.Email);
 
-            return RedirectToAction("Index", "Dashboard");
+            if (account != null && PasswordManager.VerifyPassword(model.Password, account.Password))
+            {
+                HttpContext.Session.SetString("UserRole", account.Role.Name);
+                return RedirectToAction("Index", "Dashboard");
+            }
+            ModelState.AddModelError("", "Invalid email or password. Please check your credentials.");
+            return View(model);
         }
 
         public IActionResult Register() => View();
@@ -82,7 +99,7 @@ namespace SFERS.Controllers
                 return View(model);
             }
 
-            if (model.Password.Length < 6)
+            if (string.IsNullOrEmpty(model?.Password) || model.Password.Length < 6)
             {
                 ModelState.AddModelError("Password", "Password must be at least 6 characters long.");
                 return View(model);
@@ -93,8 +110,18 @@ namespace SFERS.Controllers
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match. Please try again.");
                 return View(model);
             }
+            var defaultRole = dbContext.Roles.FirstOrDefault(r => r != null && r.Name == "Student",
+                null) ?? new Role { Name = "Role", Description = "User role" };
 
-            RegisteredUsers[model.Email.ToLower()] = model.Password;
+            var account = new Account
+            {
+                Username = model.Email,
+                Password = PasswordManager.HashPassword(model.Password),
+                RoleId = defaultRole.Id,
+                Role = defaultRole,
+            };
+            dbContext.Accounts.Add(account);
+            dbContext.SaveChanges();
 
             TempData["Message"] = "Registration successful! Please login with your credentials.";
             return RedirectToAction("Login");

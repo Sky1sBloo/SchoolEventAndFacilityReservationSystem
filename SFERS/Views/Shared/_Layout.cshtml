@@ -61,9 +61,14 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @* Removed duplicate Dashboard and Reservations links that pointed to # *@
 
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Reservations" asp-action="Index">Reservations</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                         </li>
@@ -78,6 +83,41 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Analytics" asp-action="Index">Analytics</a>
+                        </li>
+
+                        <li class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-shield me-1"></i> Admin Panel
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li>
+                                    <h6 class="dropdown-header">Management</h6>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="AdminRooms" asp-action="Index">
+                                        <i class="fas fa-door-open me-2 text-primary"></i>Manage Rooms
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="AdminEquipment" asp-action="Index">
+                                        <i class="fas fa-tools me-2 text-warning"></i>Manage Equipment
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="AdminUsers" asp-action="Index">
+                                        <i class="fas fa-users me-2 text-success"></i>Manage Users
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <h6 class="dropdown-header">Insights</h6>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="AdminAnalytics" asp-action="Index">
+                                        <i class="fas fa-chart-line me-2 text-info"></i>View Analytics
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
 
@@ -94,15 +134,6 @@
     </header>
 
     <div class="container">
-        @* Added success message display for registration *@
-        @if (TempData["Message"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @TempData["Message"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

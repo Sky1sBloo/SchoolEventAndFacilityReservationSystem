@@ -1,0 +1,87 @@
+@model List<SFERS.Models.ViewModel.EquipmentViewModel>
+@{
+    ViewData["Title"] = "Admin - Equipment";
+}
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between">
+        <h2><i class="fas fa-boxes me-2"></i>Equipment Registry</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipModal">
+            <i class="fas fa-plus"></i> Register Item
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Assigned Location</th>
+                    <th>Condition</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><code>@item.Id</code></td>
+                        <td class="fw-bold">@item.Name</td>
+                        <td>@item.Category</td>
+                        <td>
+                            <select class="form-select form-select-sm" asp-for="@item.AssignedRoom">
+                                <option>Storage A</option>
+                                <option>Auditorium</option>
+                                <option>Lab 1</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm bg-light">
+                                <option selected>Good</option>
+                                <option>Needs Repair</option>
+                                <option>Broken</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary"><i class="fas fa-save"></i></button>
+                                <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addEquipModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Register New Equipment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="CreateEquipment">
+                    <div class="mb-3">
+                        <label>Item Name</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Category</label>
+                        <select class="form-select">
+                            <option>Projector</option>
+                            <option>Audio</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add to Inventory</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

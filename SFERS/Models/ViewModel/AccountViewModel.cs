@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-namespace SFERS.Models
+
+namespace SFERS.Models.ViewModel
 {
     // --- AUTHENTICATION MODELS ---
     public class LoginViewModel

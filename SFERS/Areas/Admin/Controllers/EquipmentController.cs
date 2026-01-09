@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFERS.Models.ViewModel; // This fixes the missing reference
 
 namespace SFERS.Controllers.Admin
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class EquipmentController : Controller
     {
         // GET: /AdminEquipment/Index

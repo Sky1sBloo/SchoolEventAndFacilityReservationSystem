@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFERS.Models;
 
 namespace SFERS.Controllers.Admin
 {
     [Area("Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class UsersController : Controller
     {
         public IActionResult Index()

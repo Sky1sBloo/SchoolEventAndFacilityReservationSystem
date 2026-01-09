@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SFERS.Models.ViewModel;
 
-namespace SFERS.Controllers
+namespace SFERS.Controllers.Admin
 {
-    public class AdminRoomsController : Controller
+    [Area("Admin")]
+    public class RoomsController : Controller
     {
         // GET: /AdminRooms
         public IActionResult Index()

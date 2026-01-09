@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SFERS.Models.ViewModel;
 
-namespace SFERS.Controllers
+namespace SFERS.Controllers.Admin
 {
-    public class AdminAnalyticsController : Controller
+    [Area("Admin")]
+    public class AnalyticsController : Controller
     {
         public IActionResult Index()
         {

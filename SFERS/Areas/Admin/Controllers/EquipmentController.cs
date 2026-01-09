@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SFERS.Models.ViewModel; // This fixes the missing reference
 
-namespace SFERS.Controllers
+namespace SFERS.Controllers.Admin
 {
-    public class AdminEquipmentController : Controller
+    [Area("Admin")]
+    public class EquipmentController : Controller
     {
         // GET: /AdminEquipment/Index
         public IActionResult Index()

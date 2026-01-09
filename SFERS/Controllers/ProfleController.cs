@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFERS.Models;
+using SFERS.Models.ViewModel;
 
 namespace SFERS.Controllers
 {
@@ -9,12 +10,11 @@ namespace SFERS.Controllers
     {
         public IActionResult Index()
         {
-            var userProfile = new UserProfileViewModel
+            var userProfile = new UserProfileViewModel 
             {
-                FullName = "John Doe",
-                Role = "Student Admin",
-                Email = HttpContext.Session.GetString("UserEmail") ?? "john.doe@school.edu",
-                Username = "jdoe2025"
+                FullName = User.FindFirstValue(ClaimTypes.Name) ?? "Unknown User",
+                Role = User.FindFirstValue(ClaimTypes.Role) ?? "Invalid Role",
+                Email = User.FindFirstValue(ClaimTypes.Email) ?? "",
             };
 
             return View(userProfile);

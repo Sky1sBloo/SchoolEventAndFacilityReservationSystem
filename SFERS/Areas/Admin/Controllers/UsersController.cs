@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFERS.Models;
+using SFERS.Models.ViewModel;
 
 namespace SFERS.Controllers.Admin
 {

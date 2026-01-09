@@ -85,6 +85,8 @@
                             <a class="nav-link" asp-controller="Analytics" asp-action="Index">Analytics</a>
                         </li>
 
+                        @if (User.IsInRole("Admin"))
+                        {
                         <li class="nav-item dropdown ms-lg-3 border-start border-secondary ps-lg-3">
                             <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-user-shield me-1"></i> Admin Panel
@@ -127,6 +129,7 @@
                                 </li>
                             </ul>
                         </li>
+                        }
                     </ul>
 
                     <ul class="navbar-nav">

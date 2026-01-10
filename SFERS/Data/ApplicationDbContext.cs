@@ -1,3 +1,6 @@
+using System.Data.Common;
+using System.Diagnostics.Contracts;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Models.Entities;
 
@@ -21,6 +24,9 @@ namespace SFERS.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<RoomType> RoomTypes { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<EquipmentCategory> EquipmentCategories { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
     }
 }

@@ -35,17 +35,22 @@
                                 </div>
                             </td>
                             <td>
-                                <select class="form-select form-select-sm" style="width: 120px;">
-                                    <option selected="@(user.Role == "Student")">Student</option>
-                                    <option selected="@(user.Role == "Faculty")">Faculty</option>
-                                    <option selected="@(user.Role == "Admin")">Admin</option>
-                                </select>
+                                <form method="post" asp-area="admin" asp-controller="Users" asp-action="UpdateRole" asp-route-id="@user.Id">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <select name="newRole" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
+                                        <option selected="@(user.Role == "User")">User</option>
+                                        <option selected="@(user.Role == "Admin")">Admin</option>
+                                    </select>
+                                </form>
                             </td>
                             <td><span class="badge bg-success">Active</span></td>
                             <td>Yesterday</td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-link text-warning" title="Reset Password"><i class="fas fa-key"></i></button>
-                                <button class="btn btn-sm btn-link text-danger" title="Ban User"><i class="fas fa-ban"></i></button>
+                                <button class="btn btn-sm btn-link text-warning" title="Reset Password"><i
+                                        class="fas fa-key"></i></button>
+                                <button class="btn btn-sm btn-link text-danger" title="Ban User"><i
+                                        class="fas fa-ban"></i></button>
                             </td>
                         </tr>
                     }

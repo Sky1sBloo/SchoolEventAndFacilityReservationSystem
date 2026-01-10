@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SFERS.Data;
 using SFERS.Models.ViewModel;
 
 namespace SFERS.Controllers.Admin
@@ -8,21 +9,47 @@ namespace SFERS.Controllers.Admin
     [Authorize(Policy = "AdminOnly")]
     public class UsersController : Controller
     {
+        private ApplicationDbContext dbContext;
+        public UsersController(ApplicationDbContext context)
+        {
+            dbContext = context;
+        }
         public IActionResult Index()
         {
-            var users = new List<UserProfileViewModel>
+            var users = dbContext.Accounts.ToList();
+            var userViewModel = new List<UserProfileViewModel>();
+            foreach (var user in users)
             {
-                new UserProfileViewModel { Id=1, FullName="John Doe", Role="Student", IsActive=true },
-                new UserProfileViewModel { Id=2, FullName="Dr. Smith", Role="Faculty", IsActive=true }
-            };
-            return View(users);
+                var role = dbContext.Roles.Find(user.RoleId);
+                userViewModel.Add(new UserProfileViewModel
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Role = role != null ? role.Name : "Unknown",
+                    IsActive = false
+                });
+            }
+            return View(userViewModel);
         }
 
         // Promotes/Demotes a user (e.g., Student -> Admin)
         [HttpPost]
-        public IActionResult UpdateRole(int userId, string newRole)
+        public async Task<IActionResult> UpdateRole(int userId, string newRole)
         {
-            // TODO: _userService.UpdateRole(userId, newRole);
+            var user = await dbContext.Accounts.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var role = dbContext.Roles.FirstOrDefault(r => r.Name == newRole);
+            if (role == null)
+            {   
+                return BadRequest("Invalid role specified: " + newRole);
+            }
+            user.RoleId = role.Id;
+            await dbContext.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 

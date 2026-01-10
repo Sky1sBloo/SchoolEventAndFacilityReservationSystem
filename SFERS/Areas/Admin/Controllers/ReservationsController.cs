@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SFERS.Models.ViewModel;
 
-namespace SFERS.Controllers
+namespace SFERS.Controllers.Admin
 {
-    public class AdminReservationsController : Controller
+    public class ReservationsController : Controller
     {
         // GET: /AdminReservations
         public IActionResult Index()

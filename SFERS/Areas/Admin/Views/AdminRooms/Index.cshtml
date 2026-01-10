@@ -37,9 +37,13 @@
                         data-bs-target="#editRoomModal_@room.Id">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@room.Id)">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <form method="post" asp-area="Admin" asp-controller="AdminRooms" asp-action="Delete"
+                        asp-route-id="@room.Id" onsubmit="return confirm('Delete this room?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

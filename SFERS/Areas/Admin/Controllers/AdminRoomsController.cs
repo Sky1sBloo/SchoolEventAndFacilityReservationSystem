@@ -44,7 +44,6 @@ namespace SFERS.Controllers.Admin
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AdminRoomViewModel model)
         {
-            Console.WriteLine("Create Called");
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("Index");
@@ -73,8 +72,14 @@ namespace SFERS.Controllers.Admin
 
         // POST: /AdminRooms/Delete/5
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var room = await dbContext.Rooms.FindAsync(id);
+            if (room != null)
+            {
+                dbContext.Rooms.Remove(room);
+                await dbContext.SaveChangesAsync();
+            }
             // TODO: Remove room from DB
             return RedirectToAction("Index");
         }

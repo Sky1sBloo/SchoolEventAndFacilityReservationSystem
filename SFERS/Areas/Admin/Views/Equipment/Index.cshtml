@@ -21,7 +21,7 @@
                     <th>Item Name</th>
                     <th>Category</th>
                     <th>Assigned Location</th>
-                    <th>Condition</th>
+                    <th>Availablility</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -33,23 +33,36 @@
                         <td class="fw-bold">@item.Name</td>
                         <td>@item.Category</td>
                         <td>
-                            <select class="form-select form-select-sm" asp-for="@item.AssignedRoom">
+                            <select class="form-select form-select-sm" id="room_@item.Id">
                                 @foreach (var room in Model.Rooms)
                                 {
-                                    <option value="@room.Id">@room.Name</option>
+                                    <option value="@room.Id" selected="@(item.AssignedRoom == room.Name ? "selected" : null)">@room.Name</option>
                                 }
                             </select>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm bg-light">
-                                <option selected>Good</option>
-                                <option>Needs Repair</option>
-                                <option>Broken</option>
+                            <select class="form-select form-select-sm bg-light" id="status_@item.Id">
+                                @if (item.Status == "Available")
+                                {
+                                    <option value="true" selected>Available</option>
+                                    <option value="false">Unavailable</option>
+                                }
+                                else
+                                {
+                                    <option value="true">Available</option>
+                                    <option value="false" selected>Unavailable</option>
+                                }
                             </select>
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-secondary"><i class="fas fa-save"></i></button>
+                                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Update"
+                                    asp-route-id="@item.Id" id="updateForm_@item.Id">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="roomId" id="roomInput_@item.Id" />
+                                    <input type="hidden" name="isAvailable" id="statusInput_@item.Id" />
+                                    <button type="submit" class="btn btn-outline-secondary" onclick="populateForm(@item.Id); return true;"><i class="fas fa-save"></i></button>
+                                </form>
                                 <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Delete"
                                     asp-route-id="@item.Id" onsubmit="return confirm('Delete this equipment?');">
                                     @Html.AntiForgeryToken()
@@ -102,3 +115,17 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function populateForm(equipmentId) {
+            const roomSelect = document.getElementById('room_' + equipmentId);
+            const statusSelect = document.getElementById('status_' + equipmentId);
+            const roomInput = document.getElementById('roomInput_' + equipmentId);
+            const statusInput = document.getElementById('statusInput_' + equipmentId);
+            
+            roomInput.value = roomSelect.value;
+            statusInput.value = statusSelect.value;
+        }
+    </script>
+}

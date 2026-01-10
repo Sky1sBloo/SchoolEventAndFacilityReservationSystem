@@ -55,8 +55,15 @@ namespace SFERS.Controllers.Admin
 
         // POST: /AdminEquipment/UpdateStatus
         [HttpPost]
-        public IActionResult UpdateStatus(int id, string newStatus)
+        public async Task<IActionResult> Update(int id, int roomId, bool isAvailable)
         {
+            var equipment = await dbContext.Equipments.FindAsync(id);
+            if (equipment != null)
+            {
+                equipment.RoomId = roomId;
+                equipment.isAvailable = isAvailable;
+                await dbContext.SaveChangesAsync();
+            }
             // TODO: Add logic to find item by ID and update status
             return RedirectToAction("Index");
         }

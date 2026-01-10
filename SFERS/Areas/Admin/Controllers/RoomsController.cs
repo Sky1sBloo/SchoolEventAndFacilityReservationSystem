@@ -9,11 +9,11 @@ namespace SFERS.Controllers.Admin
 {
     [Area("Admin")]
     [Authorize(Policy = "AdminOnly")]
-    public class AdminRoomsController : Controller
+    public class RoomsController : Controller
     {
         private ApplicationDbContext dbContext;
 
-        public AdminRoomsController(ApplicationDbContext context)
+        public RoomsController(ApplicationDbContext context)
         {
             dbContext = context;
         }

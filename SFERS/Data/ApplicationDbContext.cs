@@ -24,6 +24,8 @@ namespace SFERS.Data
                 new EquipmentCategory { Id = 2, Name = "Computing" },
                 new EquipmentCategory { Id = 3, Name = "Furniture" }
             );
+            modelBuilder.Entity<Equipment>().HasOne(e => e.Room)
+                .WithMany().HasForeignKey(e => e.RoomId).OnDelete(DeleteBehavior.SetNull);
             base.OnModelCreating(modelBuilder);
         }
 

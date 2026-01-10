@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using SFERS.Models.Entities;
 
 namespace SFERS.Models.ViewModel
 {

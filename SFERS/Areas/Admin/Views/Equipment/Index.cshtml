@@ -36,7 +36,20 @@
                             <select class="form-select form-select-sm" id="room_@item.Id">
                                 @foreach (var room in Model.Rooms)
                                 {
-                                    <option value="@room.Id" selected="@(item.AssignedRoom == room.Name ? "selected" : null)">@room.Name</option>
+                                    <option value="@room.Id" selected="@(item.AssignedRoom == room.Name ? "selected" : null)">
+                                        @room.Name</option>
+                                }
+                                @if (!Model.Rooms.Any())
+                                {
+                                    <option disabled>No rooms available</option>
+                                }
+                                @if (item.AssignedRoom == null)
+                                {
+                                    <option value="" selected>Unassigned</option>
+                                }
+                                else
+                                {
+                                    <option value="">Unassigned</option>
                                 }
                             </select>
                         </td>
@@ -61,7 +74,8 @@
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="roomId" id="roomInput_@item.Id" />
                                     <input type="hidden" name="isAvailable" id="statusInput_@item.Id" />
-                                    <button type="submit" class="btn btn-outline-secondary" onclick="populateForm(@item.Id); return true;"><i class="fas fa-save"></i></button>
+                                    <button type="submit" class="btn btn-outline-secondary"
+                                        onclick="populateForm(@item.Id); return true;"><i class="fas fa-save"></i></button>
                                 </form>
                                 <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Delete"
                                     asp-route-id="@item.Id" onsubmit="return confirm('Delete this equipment?');">
@@ -123,7 +137,7 @@
             const statusSelect = document.getElementById('status_' + equipmentId);
             const roomInput = document.getElementById('roomInput_' + equipmentId);
             const statusInput = document.getElementById('statusInput_' + equipmentId);
-            
+
             roomInput.value = roomSelect.value;
             statusInput.value = statusSelect.value;
         }

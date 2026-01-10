@@ -31,7 +31,7 @@ namespace SFERS.Controllers.Admin
                     Id = e.Id,
                     Name = e.Name,
                     Category = e.Category != null ? e.Category.Name : "Uncategorized",
-                    AssignedRoom = e.Room != null ? e.Room.Name : "Unassigned",
+                    AssignedRoom = e.Room != null ? e.Room.Name : null,
                     Status = e.isAvailable ? "Available" : "In Use"
                 }).ToListAsync();
 
@@ -55,12 +55,12 @@ namespace SFERS.Controllers.Admin
 
         // POST: /AdminEquipment/UpdateStatus
         [HttpPost]
-        public async Task<IActionResult> Update(int id, int roomId, bool isAvailable)
+        public async Task<IActionResult> Update(int id, int? roomId, bool isAvailable)
         {
             var equipment = await dbContext.Equipments.FindAsync(id);
             if (equipment != null)
             {
-                equipment.RoomId = roomId;
+                equipment.RoomId = string.IsNullOrEmpty(roomId.ToString()) ? null : roomId;
                 equipment.isAvailable = isAvailable;
                 await dbContext.SaveChangesAsync();
             }

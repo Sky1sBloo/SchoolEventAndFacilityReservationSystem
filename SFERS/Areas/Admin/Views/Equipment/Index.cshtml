@@ -1,4 +1,4 @@
-@model List<SFERS.Models.ViewModel.EquipmentViewModel>
+@model SFERS.Models.ViewModel.AdminEquipmentViewModel
 @{
     ViewData["Title"] = "Admin - Equipment";
 }
@@ -26,7 +26,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Equipments)
                 {
                     <tr>
                         <td><code>@item.Id</code></td>
@@ -34,9 +34,10 @@
                         <td>@item.Category</td>
                         <td>
                             <select class="form-select form-select-sm" asp-for="@item.AssignedRoom">
-                                <option>Storage A</option>
-                                <option>Auditorium</option>
-                                <option>Lab 1</option>
+                                @foreach (var room in Model.Rooms)
+                                {
+                                    <option value="@room.Id">@room.Name</option>
+                                }
                             </select>
                         </td>
                         <td>
@@ -49,7 +50,12 @@
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <button class="btn btn-outline-secondary"><i class="fas fa-save"></i></button>
-                                <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Delete"
+                                    asp-route-id="@item.Id" onsubmit="return confirm('Delete this equipment?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -67,16 +73,27 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="CreateEquipment">
+                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Create">
                     <div class="mb-3">
                         <label>Item Name</label>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" asp-for="NewEquipmentName">
                     </div>
                     <div class="mb-3">
                         <label>Category</label>
-                        <select class="form-select">
-                            <option>Projector</option>
-                            <option>Audio</option>
+                        <select class="form-select" asp-for="NewEquipmentCategoryId">
+                            @foreach (var category in Model.EquipmentCategories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Assigned Location</label>
+                        <select class="form-select" asp-for="NewEquipmentCategoryId">
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <option value="@room.Id">@room.Name</option>
+                            }
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Add to Inventory</button>

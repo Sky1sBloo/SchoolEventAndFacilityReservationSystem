@@ -19,6 +19,11 @@ namespace SFERS.Data
                 new Role { Id = 1, Name = "Admin", Description = "Administrator with full access" },
                 new Role { Id = 2, Name = "User", Description = "Regular user with limited access" }
             );
+            modelBuilder.Entity<EquipmentCategory>().HasData(
+                new EquipmentCategory { Id = 1, Name = "Audio-Visual" },
+                new EquipmentCategory { Id = 2, Name = "Computing" },
+                new EquipmentCategory { Id = 3, Name = "Furniture" }
+            );
             base.OnModelCreating(modelBuilder);
         }
 

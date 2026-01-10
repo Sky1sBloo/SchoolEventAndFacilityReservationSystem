@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SFERS.Data;
 using SFERS.Models.ViewModel; // This fixes the missing reference
 
 namespace SFERS.Controllers.Admin
@@ -8,29 +10,45 @@ namespace SFERS.Controllers.Admin
     [Authorize(Policy = "AdminOnly")]
     public class EquipmentController : Controller
     {
-        // GET: /AdminEquipment/Index
-        public IActionResult Index()
+        private ApplicationDbContext dbContext;
+        public EquipmentController(ApplicationDbContext context)
         {
-            // Mock Data matching the table structure
-            var equipment = new List<EquipmentViewModel>
+            dbContext = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var equipment = new AdminEquipmentViewModel()
             {
-                new EquipmentViewModel { Id=101, Name="Epson Pro", Category="Projector", AssignedRoom="Auditorium", Status="Available" },
-                new EquipmentViewModel { Id=102, Name="Dell Latitude", Category="Laptop", AssignedRoom="Lab 1", Status="In Use" }
+                EquipmentCategories = await dbContext.EquipmentCategories.ToListAsync(),
+                Equipments = new List<EquipmentViewModel>(),
+                Rooms = await dbContext.Rooms.ToListAsync()
             };
+
+            equipment.Equipments = await dbContext.Equipments
+                .Select(e => new EquipmentViewModel
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Category = e.Category != null ? e.Category.Name : "Uncategorized",
+                    AssignedRoom = e.Room != null ? e.Room.Name : "Unassigned",
+                    Status = e.isAvailable ? "Available" : "In Use"
+                }).ToListAsync();
+
             return View(equipment);
         }
 
-        // POST: /AdminEquipment/Create
         [HttpPost]
-        public IActionResult Create(EquipmentViewModel model)
+        public async Task<IActionResult> Create(AdminEquipmentViewModel model)
         {
-            // Default status for new items if not set
-            if (string.IsNullOrEmpty(model.Status))
+            dbContext.Equipments.Add(new Models.Entities.Equipment
             {
-                model.Status = "Available";
-            }
-
-            // TODO: Add database save logic here
+                Name = model.NewEquipmentName,
+                CategoryId = model.NewEquipmentCategoryId,
+                RoomId = null,
+                isAvailable = true
+            });
+            await dbContext.SaveChangesAsync();
 
             return RedirectToAction("Index");
         }
@@ -42,5 +60,17 @@ namespace SFERS.Controllers.Admin
             // TODO: Add logic to find item by ID and update status
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var equipment = dbContext.Equipments.Find(id);
+            if (equipment != null)
+            {
+                dbContext.Equipments.Remove(equipment);
+                dbContext.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }   
     }
 }

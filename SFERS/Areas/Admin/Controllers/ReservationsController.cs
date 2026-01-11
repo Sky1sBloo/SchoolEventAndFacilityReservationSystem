@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SFERS.Data;
+using SFERS.Models.Entities;
 using SFERS.Models.ViewModel; 
 
 namespace SFERS.Controllers.Admin
@@ -8,56 +10,58 @@ namespace SFERS.Controllers.Admin
     [Authorize(Policy = "AdminOnly")]
     public class ReservationsController : Controller
     {
-        // GET: /AdminReservations
-        public IActionResult Index()
+        public ApplicationDbContext dbContext;
+        public ReservationsController(ApplicationDbContext context)
         {
-            // TODO: Fetch from Database
-            var reservations = new List<AdminReservationViewModel>
-            {
-                new AdminReservationViewModel
-                {
-                    Id = 1,
-                    RoomName = "Auditorium",
-                    Date = DateTime.Now.AddDays(1),
-                    TimeSlot = "08:00 AM - 12:00 PM",
-                    Purpose = "School Assembly",
-                    Status = "Pending"
-                },
-                new AdminReservationViewModel
-                {
-                    Id = 2,
-                    RoomName = "Laboratory",
-                    Date = DateTime.Now.AddDays(3),
-                    TimeSlot = "10:00 AM - 12:00 PM",
-                    Purpose = "Chemistry Exam",
-                    Status = "Pending"
-                },
-                new AdminReservationViewModel
-                {
-                    Id = 3,
-                    RoomName = "Room 3",
-                    Date = DateTime.Now.AddDays(5),
-                    TimeSlot = "01:00 PM - 03:00 PM",
-                    Purpose = "Faculty Meeting",
-                    Status = "Approved"
-                }
-            };
-
-            return View(reservations);
+            dbContext = context;
         }
 
-        // POST: /AdminReservations/Approve/5
-        [HttpPost]
-        public IActionResult Approve(int id)
+        public IActionResult Index()
         {
-            // TODO: Update reservation status to Approved
+            var reservations = dbContext.Reservations.ToList().OrderBy(r => r.Date).ThenBy(r => r.StartTime);
+
+            // TODO: Fetch from Database
+            var reservationsView = new List<AdminReservationViewModel>();
+            foreach (var reservation in reservations)
+            {
+                var room = dbContext.Rooms.Find(reservation.RoomId);
+                var status = reservation.Status.ToString();
+
+                reservationsView.Add(new AdminReservationViewModel
+                {
+                    Id = reservation.Id,
+                    RoomName = room != null ? room.Name : "Unknown",
+                    Date = reservation.Date,
+                    TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
+                    Purpose = reservation.Purpose,
+                    Status = status
+                });
+            }
+
+            return View(reservationsView);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var reservation = dbContext.Reservations.Find(id);
+            if (reservation != null)
+            {
+                reservation.Status = ReservationStatus.Approved;
+                await dbContext.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
         }
 
-        // POST: /AdminReservations/Decline/5
         [HttpPost]
-        public IActionResult Decline(int id)
+        public async Task<IActionResult> Decline(int id)
         {
+            var reservation = dbContext.Reservations.Find(id);
+            if (reservation != null)
+            {
+                reservation.Status = ReservationStatus.Declined;
+                await dbContext.SaveChangesAsync();
+            }
             // TODO: Update reservation status to Declined
             return RedirectToAction("Index");
         }

@@ -35,5 +35,6 @@ namespace SFERS.Data
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<EquipmentCategory> EquipmentCategories { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ReservationLog> ReservationLogs { get; set; }
     }
 }

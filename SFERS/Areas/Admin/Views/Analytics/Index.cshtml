@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Data Governance";
 }
+@model SFERS.Models.ViewModel.AdminAnalyticsViewModel
 
 <div class="row">
     <div class="col-md-4">
@@ -37,7 +38,9 @@
                 <form class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label">Room</label>
-                        <select class="form-select"><option>Auditorium</option></select>
+                        <select class="form-select">
+                            <option>Auditorium</option>
+                        </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Date</label>
@@ -72,13 +75,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>#99231</td>
-                    <td>Lab 1</td>
-                    <td>2025-01-08 14:00</td>
-                    <td>2 hrs</td>
-                    <td><button class="btn btn-sm btn-danger py-0">Delete Log</button></td>
-                </tr>
+                @foreach (var log in Model.ReservationLogs)
+                {
+                    <tr>
+                        <td>@log.Id</td>
+                        <td>@(log.Room)</td>
+                        <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@(log.Duration)</td>
+                        <td><button class="btn btn-sm btn-danger py-0">Delete Log</button></td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

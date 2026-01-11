@@ -49,6 +49,7 @@ namespace SFERS.Controllers.Admin
             {
                 reservation.Status = ReservationStatus.Approved;
                 await dbContext.SaveChangesAsync();
+                await LogReservation(reservation.Id);
             }
             return RedirectToAction("Index");
         }
@@ -64,6 +65,17 @@ namespace SFERS.Controllers.Admin
             }
             // TODO: Update reservation status to Declined
             return RedirectToAction("Index");
+        }
+
+        private async Task LogReservation(int reservationId)
+        {
+            var log = new ReservationLog
+            {
+                ReservationId = reservationId,
+                Timestamp = DateTime.Now
+            };
+            dbContext.ReservationLogs.Add(log);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

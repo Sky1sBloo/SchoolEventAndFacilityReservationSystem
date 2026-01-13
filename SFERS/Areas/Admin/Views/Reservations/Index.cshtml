@@ -31,7 +31,15 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="fw-semibold">@item.RoomName</td>
+                            <td class="fw-semibold">
+                                @item.RoomName
+                                <div class="d-flex flex-wrap gap-1 mb-3">
+                                    @foreach (var equipment in item.EquipmentNames ?? Enumerable.Empty<string>())
+                                    {
+                                        <span class="badge bg-secondary">@equipment</span>
+                                    }
+                                </div>
+                            </td>
                             <td>@item.Date.ToShortDateString()</td>
                             <td>@item.TimeSlot</td>
                             <td>@item.Purpose</td>
@@ -80,5 +88,3 @@
         </div>
     </div>
 </div>
-
-

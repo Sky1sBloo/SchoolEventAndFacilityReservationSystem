@@ -7,6 +7,7 @@ namespace SFERS.Models.ViewModel
     {
         public int Id { get; set; }
         public required string Room { get; set; }
+        public List<string> Equipment { get; set; } = new List<string>();
         public DateTime Timestamp { get; set; }
         public required string Duration { get; set; }
     }

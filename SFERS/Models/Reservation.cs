@@ -12,7 +12,7 @@ public enum ReservationStatus
 public class Reservation
 {
     public int Id { get; set; }
-    public int RoomId { get; set; }
+    public int? RoomId { get; set; }
     public Room? Room { get; set; }
     public required DateTime Date { get; set; }
     public TimeSpan StartTime { get; set; }

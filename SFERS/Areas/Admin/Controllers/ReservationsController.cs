@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
 using SFERS.Models.Entities;
 using SFERS.Models.ViewModel; 
@@ -16,9 +17,13 @@ namespace SFERS.Controllers.Admin
             dbContext = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var reservations = dbContext.Reservations.ToList().OrderBy(r => r.Date).ThenBy(r => r.StartTime);
+            var reservations = await dbContext.Reservations
+                .OrderBy(r => r.Status == ReservationStatus.Approved)
+                .ThenBy(r => r.Date)
+                .ThenBy(r => r.StartTime)
+                .ToListAsync();
 
             // TODO: Fetch from Database
             var reservationsView = new List<AdminReservationViewModel>();
@@ -26,11 +31,16 @@ namespace SFERS.Controllers.Admin
             {
                 var room = dbContext.Rooms.Find(reservation.RoomId);
                 var status = reservation.Status.ToString();
+                List<string> equipmentNames = await dbContext.ReservationEquipments
+                    .Where(re => re.ReservationId == reservation.Id)
+                    .Select(re => re.Equipment.Name)
+                    .ToListAsync();
 
                 reservationsView.Add(new AdminReservationViewModel
                 {
                     Id = reservation.Id,
                     RoomName = room != null ? room.Name : "Unknown",
+                    EquipmentNames = equipmentNames,
                     Date = reservation.Date,
                     TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
                     Purpose = reservation.Purpose,

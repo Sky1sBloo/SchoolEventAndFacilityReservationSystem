@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Data Governance";
 }
+@model SFERS.Models.ViewModel.AdminAnalyticsViewModel
 
 <div class="row">
     <div class="col-md-4">
@@ -34,21 +35,27 @@
                 <h5 class="mb-0">Manual Log Entry (Data Correction)</h5>
             </div>
             <div class="card-body">
-                <form class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Room</label>
-                        <select class="form-select"><option>Auditorium</option></select>
+                <form method="post" asp-action="InsertLog" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Reservation</label>
+                        <select class="form-select" asp-for="SelectedReservation">
+                            <option value="">-- Select a reservation --</option>
+                            @foreach (var reservation in Model.ApprovedReservations)
+                            {
+                                <option value="@reservation.Id">
+                                    Reservation #@reservation.Id - @(reservation.Room != null ? reservation.Room.Name : "No             Room") on @reservation.Date.ToString("yyyy-MM-dd")
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="SelectedReservation" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label">Date</label>
-                        <input type="date" class="form-control">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Hours Used</label>
-                        <input type="number" class="form-control" placeholder="e.g. 2.5">
+                        <input type="date" asp-for="SelectedDate" class="form-control">
+                        <span asp-validation-for="SelectedDate" class="text-danger"></span>
                     </div>
                     <div class="col-12 text-end">
-                        <button class="btn btn-warning text-dark">
+                        <button type="submit" class="btn btn-warning text-dark">
                             <i class="fas fa-plus-circle me-1"></i> Inject Historical Record
                         </button>
                     </div>
@@ -72,14 +79,24 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>#99231</td>
-                    <td>Lab 1</td>
-                    <td>2025-01-08 14:00</td>
-                    <td>2 hrs</td>
-                    <td><button class="btn btn-sm btn-danger py-0">Delete Log</button></td>
-                </tr>
+                @foreach (var log in Model.ReservationLogs)
+                {
+                    <tr>
+                        <td>@log.Id</td>
+                        <td>@(log.Room)</td>
+                        <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@(log.Duration)</td>
+                        <form method="post" asp-action="DeleteLog" asp-controller="Analytics" asp-area="Admin">
+                            <input type="hidden" name="id" value="@log.Id" />
+                            <td><button class="btn btn-sm btn-danger py-0">Delete Log</button></td>
+                        </form>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

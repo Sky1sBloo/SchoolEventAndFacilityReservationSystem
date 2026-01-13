@@ -1,4 +1,4 @@
-﻿@model List<SFERS.Models.ViewModel.RoomViewModel>
+﻿@model SFERS.Models.ViewModel.AdminRoomViewModel
 @{
     ViewData["Title"] = "Admin - Manage Rooms";
 }
@@ -11,7 +11,7 @@
 </div>
 
 <div class="row g-4">
-    @foreach (var room in Model)
+    @foreach (var room in Model.Rooms)
     {
         <div class="col-md-4">
             <div class="card h-100 border-primary">
@@ -33,12 +33,17 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0 d-flex gap-2 pb-3">
-                    <button class="btn btn-sm btn-outline-primary flex-grow-1" data-bs-toggle="modal" data-bs-target="#editRoomModal_@room.Id">
+                    <button class="btn btn-sm btn-outline-primary flex-grow-1" data-bs-toggle="modal"
+                        data-bs-target="#editRoomModal_@room.Id">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@room.Id)">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <form method="post" asp-area="Admin" asp-controller="Rooms" asp-action="Delete"
+                        asp-route-id="@room.Id" onsubmit="return confirm('Delete this room?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -48,25 +53,31 @@
 <div class="modal fade" id="createRoomModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="CreateRoom" method="post">
+            <form method="post" asp-area="Admin" asp-controller="Rooms" asp-action="Create">
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Room</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="mb-3">
-                        <label>Room Name</label>
-                        <input type="text" name="Name" class="form-control" required>
+                        <label class="form-label">Room Name</label>
+                        <input asp-for="NewRoomName" class="form-control" required />
                     </div>
                     <div class="mb-3">
-                        <label>Capacity</label>
-                        <input type="number" name="Capacity" class="form-control" required>
+                        <label class="form-label">Capacity</label>
+                        <input asp-for="NewRoomCapacity" class="form-control" type="number" required />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Create Room</button>
+                    <input type="submit" class="btn btn-success" value="Create Room" />
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

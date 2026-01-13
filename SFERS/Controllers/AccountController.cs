@@ -23,9 +23,9 @@ namespace SFERS.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel? model)
         {
-            if (!ModelState.IsValid)
+            if (model == null || !ModelState.IsValid)
             {
                 return View(model);
             }
@@ -33,7 +33,7 @@ namespace SFERS.Controllers
             var account = dbContext.Accounts.Include(a => a.Role)
                 .FirstOrDefault(a => a.Email == model.Email);
 
-            if (account != null && PasswordManager.VerifyPassword(model.Password, account.Password))
+            if (account != null && model.Password != null && PasswordManager.VerifyPassword(model.Password, account.Password))
             {
                 var claims = new List<Claim>
                 {
@@ -57,10 +57,16 @@ namespace SFERS.Controllers
         public IActionResult Register() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel? model)
         {
-            if (!ModelState.IsValid)
+            if (model == null || !ModelState.IsValid)
             {
+                return View(model);
+            }
+
+            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Password))
+            {
+                ModelState.AddModelError("", "All fields are required.");
                 return View(model);
             }
 
@@ -96,5 +102,7 @@ namespace SFERS.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult AccessDenied() => View();
     }
 }

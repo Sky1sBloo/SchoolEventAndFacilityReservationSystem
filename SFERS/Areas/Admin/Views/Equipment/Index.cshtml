@@ -1,0 +1,145 @@
+@model SFERS.Models.ViewModel.AdminEquipmentViewModel
+@{
+    ViewData["Title"] = "Admin - Equipment";
+}
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between">
+        <h2><i class="fas fa-boxes me-2"></i>Equipment Registry</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipModal">
+            <i class="fas fa-plus"></i> Register Item
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Assigned Location</th>
+                    <th>Availablility</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Equipments)
+                {
+                    <tr>
+                        <td><code>@item.Id</code></td>
+                        <td class="fw-bold">@item.Name</td>
+                        <td>@item.Category</td>
+                        <td>
+                            <select class="form-select form-select-sm" id="room_@item.Id">
+                                @foreach (var room in Model.Rooms)
+                                {
+                                    <option value="@room.Id" selected="@(item.AssignedRoom == room.Name ? "selected" : null)">
+                                        @room.Name</option>
+                                }
+                                @if (!Model.Rooms.Any())
+                                {
+                                    <option disabled>No rooms available</option>
+                                }
+                                @if (item.AssignedRoom == null)
+                                {
+                                    <option value="" selected>Unassigned</option>
+                                }
+                                else
+                                {
+                                    <option value="">Unassigned</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm bg-light" id="status_@item.Id">
+                                @if (item.Status == "Available")
+                                {
+                                    <option value="true" selected>Available</option>
+                                    <option value="false">Unavailable</option>
+                                }
+                                else
+                                {
+                                    <option value="true">Available</option>
+                                    <option value="false" selected>Unavailable</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Update"
+                                    asp-route-id="@item.Id" id="updateForm_@item.Id">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="roomId" id="roomInput_@item.Id" />
+                                    <input type="hidden" name="isAvailable" id="statusInput_@item.Id" />
+                                    <button type="submit" class="btn btn-outline-secondary"
+                                        onclick="populateForm(@item.Id); return true;"><i class="fas fa-save"></i></button>
+                                </form>
+                                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Delete"
+                                    asp-route-id="@item.Id" onsubmit="return confirm('Delete this equipment?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addEquipModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Register New Equipment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-area="Admin" asp-controller="Equipment" asp-action="Create">
+                    <div class="mb-3">
+                        <label>Item Name</label>
+                        <input type="text" class="form-control" asp-for="NewEquipmentName">
+                    </div>
+                    <div class="mb-3">
+                        <label>Category</label>
+                        <select class="form-select" asp-for="NewEquipmentCategoryId">
+                            @foreach (var category in Model.EquipmentCategories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Assigned Location</label>
+                        <select class="form-select" asp-for="NewEquipmentCategoryId">
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <option value="@room.Id">@room.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add to Inventory</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function populateForm(equipmentId) {
+            const roomSelect = document.getElementById('room_' + equipmentId);
+            const statusSelect = document.getElementById('status_' + equipmentId);
+            const roomInput = document.getElementById('roomInput_' + equipmentId);
+            const statusInput = document.getElementById('statusInput_' + equipmentId);
+
+            roomInput.value = roomSelect.value;
+            statusInput.value = statusSelect.value;
+        }
+    </script>
+}

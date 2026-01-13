@@ -57,15 +57,16 @@ namespace SFERS.Controllers.Admin
             return RedirectToAction("Index");
         }
 
-        // POST: /AdminRooms/Edit/5
         [HttpPost]
-        public IActionResult Edit(int id, RoomViewModel model)
+        public async Task<IActionResult> Edit(int editRoomId, string editRoomName, int editRoomCapacity)
         {
-            // TODO: Find room by Id and update properties
-            // var room = _context.Rooms.Find(id);
-            // room.Name = model.Name;
-            // room.IsAvailable = model.IsAvailable;
-            // _context.SaveChanges();
+            var room = await dbContext.Rooms.FindAsync(editRoomId);
+            if (room != null)
+            {
+                room.Name = editRoomName;
+                room.Capacity = editRoomCapacity;
+                await dbContext.SaveChangesAsync();
+            }
 
             return RedirectToAction("Index");
         }

@@ -37,12 +37,42 @@
                         data-bs-target="#editRoomModal_@room.Id">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <form method="post" asp-area="Admin" asp-controller="Rooms" asp-action="Delete"
-                        asp-route-id="@room.Id" onsubmit="return confirm('Delete this room?');">
+                    <form method="post" asp-area="Admin" asp-controller="Rooms" asp-action="Delete" asp-route-id="@room.Id"
+                        onsubmit="return confirm('Delete this room?');">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-sm btn-outline-danger">
                             <i class="fas fa-trash"></i>
                         </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editRoomModal_@room.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" asp-area="Admin" asp-controller="Rooms" asp-action="Edit">
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Room</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <input type="hidden" name="editRoomId" value="@room.Id" />
+                        <div class="modal-body">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="mb-3">
+                                <label class="form-label">Room Name</label>
+                                <input type="text" name="editRoomName" class="form-control" value="@room.Name" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Capacity</label>
+                                <input type="number" name="editRoomCapacity" class="form-control" value="@room.Capacity"
+                                    required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success" value="Edit Room" />
+                        </div>
                     </form>
                 </div>
             </div>
@@ -77,6 +107,8 @@
         </div>
     </div>
 </div>
+
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

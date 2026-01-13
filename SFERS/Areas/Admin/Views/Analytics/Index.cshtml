@@ -73,6 +73,7 @@
                 <tr>
                     <th>Log ID</th>
                     <th>Room</th>
+                    <th>Equipment</th>
                     <th>Timestamp</th>
                     <th>Duration</th>
                     <th>Action</th>
@@ -84,6 +85,16 @@
                     <tr>
                         <td>@log.Id</td>
                         <td>@(log.Room)</td>
+                        <td>
+                            @if (log.Equipment.Count > 0)
+                            {
+                                @string.Join(", ", log.Equipment)
+                            }
+                            else
+                            {
+                                <em>No Equipment</em>
+                            }
+                        </td>
                         <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
                         <td>@(log.Duration)</td>
                         <form method="post" asp-action="DeleteLog" asp-controller="Analytics" asp-area="Admin">

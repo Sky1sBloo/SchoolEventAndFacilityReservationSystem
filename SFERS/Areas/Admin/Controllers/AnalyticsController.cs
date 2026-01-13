@@ -17,27 +17,37 @@ namespace SFERS.Controllers.Admin
             dbContext = context;
         }
 
-        public IActionResult Index()
+        private async Task<AdminAnalyticsViewModel> BuildViewModel()
         {
             var model = new AdminAnalyticsViewModel();
-            var reservationLogs = dbContext.ReservationLogs.Include(log => log.Reservation)
-                .ThenInclude(r => r.Room).Where(l => l.Reservation != null && l.Reservation.Room != null)
-                .OrderByDescending(r => r.Timestamp).ToList();
+            var reservationLogs = await dbContext.ReservationLogs.Include(log => log.Reservation)
+                           .ThenInclude(r => r.Room).Where(l => l.Reservation != null && l.Reservation.Room != null)
+                           .OrderByDescending(r => r.Timestamp).ToListAsync();
+
             foreach (var log in reservationLogs)
             {
                 var roomName = log.Reservation?.Room?.Name ?? "Unknown";
                 var duration = log.Reservation != null ? log.Reservation.EndTime - log.Reservation.StartTime : TimeSpan.Zero;
+                var equipmentList = await dbContext.ReservationEquipments.Where(r => r.ReservationId == log.ReservationId)
+                    .Select(r => r.Equipment.Name).ToListAsync();
                 model.ReservationLogs.Add(new ReservationLogViewModel
                 {
                     Id = log.Id,
                     Room = roomName,
                     Timestamp = log.Timestamp,
-                    Duration = $"{duration.Hours}h {duration.Minutes}m"
+                    Duration = $"{duration.Hours}h {duration.Minutes}m",
+                    Equipment = equipmentList
                 });
             }
 
-            var reservationList = dbContext.Reservations.Where(r => r.Status == Models.Entities.ReservationStatus.Approved).ToList();
+            var reservationList = await dbContext.Reservations.Where(r => r.Status == Models.Entities.ReservationStatus.Approved).ToListAsync();
             model.ApprovedReservations = reservationList;
+            return model;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var model = await BuildViewModel();
             return View(model);
         }
 
@@ -46,30 +56,8 @@ namespace SFERS.Controllers.Admin
         {
             if (!ModelState.IsValid)
             {
-                var reservationLogs = dbContext.ReservationLogs.Include(log => log.Reservation)
-                    .ThenInclude(r => r.Room).Where(l => l.Reservation != null && l.Reservation.Room != null)
-                    .OrderByDescending(r => r.Timestamp).ToList();
-                
-                model.ReservationLogs.Clear();
-                foreach (var log in reservationLogs)
-                {
-                    var roomName = log.Reservation?.Room?.Name ?? "Unknown";
-                    var duration = log.Reservation != null ? log.Reservation.EndTime - log.Reservation.StartTime : TimeSpan.Zero;
-                    model.ReservationLogs.Add(new ReservationLogViewModel
-                    {
-                        Id = log.Id,
-                        Room = roomName,
-                        Timestamp = log.Timestamp,
-                        Duration = $"{duration.Hours}h {duration.Minutes}m"
-                    });
-                }
-                
-                model.ApprovedReservations = dbContext.Reservations
-                    .Where(r => r.Status == Models.Entities.ReservationStatus.Approved)
-                    .Include(r => r.Room)
-                    .ToList();
-                
-                return View("Index", model);
+                var viewModel = await BuildViewModel();
+                return View("Index", viewModel);
             }
 
             var reservation = await dbContext.Reservations.FindAsync(model.SelectedReservation);

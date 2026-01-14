@@ -48,6 +48,10 @@ namespace SFERS.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+                if (account.Role.Name == "Admin")
+                {
+                    return RedirectToAction("Index", "Analytics", new { area = "Admin" });
+                }
                 return RedirectToAction("Index", "Dashboard");
             }
             ModelState.AddModelError("", "Invalid email or password.");

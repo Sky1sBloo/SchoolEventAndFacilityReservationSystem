@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Models.Entities;
+using SFERS.Utilities;
 
 namespace SFERS.Data
 {
@@ -18,6 +19,17 @@ namespace SFERS.Data
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, Name = "Admin", Description = "Administrator with full access" },
                 new Role { Id = 2, Name = "User", Description = "Regular user with limited access" }
+            );
+            modelBuilder.Entity<Account>().HasData(
+                new Account
+                {
+                    Id = 1,
+                    FullName = "Admin User",
+                    Email = "admin@email.com",
+                    Password = PasswordManager.HashPassword("Admin@123"),
+                    RoleId = 1,
+                    Role = null!
+                }
             );
             modelBuilder.Entity<EquipmentCategory>().HasData(
                 new EquipmentCategory { Id = 1, Name = "Audio-Visual" },

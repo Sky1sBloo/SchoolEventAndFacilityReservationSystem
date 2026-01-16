@@ -208,7 +208,7 @@ namespace SFERS.Controllers
                     StartTime = model.StartTime,
                     EndTime = model.EndTime,
                     Purpose = model.Purpose ?? string.Empty,
-                    Status = ReservationStatus.Confirmed // default status
+                    Status = ReservationStatus.Pending // default status
                 };
 
                 dbContext.Reservations.Add(reservation);

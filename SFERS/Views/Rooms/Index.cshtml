@@ -46,7 +46,13 @@
                     }
                 </div>
                 <div class="card-footer bg-transparent border-0 pb-4">
-                    <button class="btn btn-outline-dark w-100" data-bs-toggle="modal" data-bs-target="#roomDetailModal">
+                    <button class="btn btn-outline-dark w-100" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#roomDetailModal"
+                            data-room-id="@room.Id"
+                            data-room-name="@room.Name"
+                            data-room-capacity="@room.Capacity"
+                            data-room-equipment="@string.Join(", ", room.Equipment ?? new List<string>())">
                         View Details
                     </button>
                 </div>
@@ -57,18 +63,77 @@
 </div>
 
 <div class="modal fade" id="roomDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Room Details</h5>
+                <h5 class="modal-title"><span id="modalRoomName">Room</span> - Reservations</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p></p>
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationsTableBody">
+                        <tr><td colspan="4" class="text-center text-muted">Loading reservations...</td></tr>
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Reserve Now</button>
+                <a id="reserveRoomLink" href="#" class="btn btn-primary">New Reservation</a>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('roomDetailModal');
+            modal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const roomId = button.getAttribute('data-room-id');
+                const roomName = button.getAttribute('data-room-name');
+                
+                document.getElementById('modalRoomName').textContent = roomName;
+                document.getElementById('reserveRoomLink').href = `/Reservations/Create?roomId=${roomId}`;
+                
+                // Fetch reservations for this room
+                fetch(`/api/rooms/${roomId}/reservations`)
+                    .then(response => response.json())
+                    .then(reservations => {
+                        const tbody = document.getElementById('reservationsTableBody');
+                        if (reservations.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No reservations</td></tr>';
+                            return;
+                        }
+                        
+                        tbody.innerHTML = reservations.map(r => `
+                            <tr>
+                                <td>${new Date(r.date).toLocaleDateString()}</td>
+                                <td>${r.startTime} - ${r.endTime}</td>
+                                <td>${r.purpose}</td>
+                                <td>
+                                    <span class="badge bg-${r.status === 'Approved' ? 'success' : r.status === 'Declined' ? 'danger' : 'warning'}">
+                                        ${r.status}
+                                    </span>
+                                </td>
+                            </tr>
+                        `).join('');
+                    })
+                    .catch(error => {
+                        document.getElementById('reservationsTableBody').innerHTML = 
+                            '<tr><td colspan="4" class="text-center text-danger">Failed to load reservations</td></tr>';
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    </script>
+}
+
+

@@ -256,6 +256,25 @@ namespace SFERS.Controllers
 
             return View(model);
         }
+
+        [HttpGet("api/rooms/{roomId}/reservations")]
+        public async Task<IActionResult> GetRoomReservations(int roomId)
+        {
+            var reservations = await dbContext.Reservations
+                .Where(r => r.RoomId == roomId && r.Date >= DateTime.Today)
+                .OrderByDescending(r => r.Date)
+                .Select(r => new
+                {
+                    r.Date,
+                    startTime = r.StartTime.ToString(@"hh\:mm"),
+                    endTime = r.EndTime.ToString(@"hh\:mm"),
+                    r.Purpose,
+                    status = r.Status.ToString()
+                })
+                .ToListAsync();
+
+            return Json(reservations);
+        }
     }
 
     internal class Rooms : Room

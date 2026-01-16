@@ -1,13 +1,24 @@
-﻿namespace SFERS.Models.ViewModel
+﻿using SFERS.Models.Entities;
+
+namespace SFERS.Models.ViewModel
 {
+    public class RoomUsageViewModel
+    {
+        public int Id { get; set; }
+        public string RoomName { get; set; } = string.Empty;
+        public int UsageCount { get; set; }
+    }
+
+    public class EquipmentUsageViewModel
+    {
+        public string EquipmentName { get; set; } = string.Empty;
+        public int UsageCount { get; set; }
+    }
+
     public class AnalyticsViewModel
     {
-        // Fix: Initialize arrays with empty values
-        public string[] RoomLabels { get; set; } = Array.Empty<string>();
-        public int[] RoomUsageData { get; set; } = Array.Empty<int>();
-
-        public int ProjectorCount { get; set; }
-        public int MicCount { get; set; }
-        public int LaptopCount { get; set; }
+        public Dictionary<int, RoomUsageViewModel> MonthlyReservationCounts { get; set; } = new Dictionary<int, RoomUsageViewModel>();
+        public Dictionary<int, EquipmentUsageViewModel> EquipmentUsages { get; set; } = new Dictionary<int, EquipmentUsageViewModel>();
+        public List<ReservationViewModel> RecentReservations { get; set; } = new List<ReservationViewModel>();
     }
 }

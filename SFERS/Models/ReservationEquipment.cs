@@ -4,8 +4,8 @@ namespace SFERS.Models.Entities
     {
         public int Id { get; set; }
         public int ReservationId { get; set; }
-        public required Reservation Reservation { get; set; }
+        public Reservation? Reservation { get; set; }
         public int EquipmentId { get; set; }
-        public required Equipment Equipment { get; set; }
+        public Equipment? Equipment { get; set; }
     }
 }

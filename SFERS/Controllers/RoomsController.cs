@@ -62,7 +62,7 @@ namespace SFERS.Controllers
             {
                 var reqEquip = await dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == r.Id)
-                    .Select(re => re.Equipment.Name)
+                    .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                     .ToListAsync();
 
                 reservationViewModels.Add(new ReservationViewModel
@@ -70,10 +70,10 @@ namespace SFERS.Controllers
                     Id = r.Id,
                     RoomName = room.Name,
                     Date = r.Date,
+                    EquipmentNames = reqEquip,
                     TimeSlot = $"{r.StartTime:hh\\:mm} - {r.EndTime:hh\\:mm}",
                     Purpose = r.Purpose,
                     Status = r.Status.ToString(),
-                    EquipmentRequested = reqEquip.Count > 0 ? string.Join(", ", reqEquip) : null
                 });
             }
 

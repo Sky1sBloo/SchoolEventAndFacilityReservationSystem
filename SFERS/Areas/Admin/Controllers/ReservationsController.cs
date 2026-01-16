@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
 using SFERS.Models.Entities;
-using SFERS.Models.ViewModel;
 using SFERS.Utilities;
 
 namespace SFERS.Controllers.Admin
@@ -22,34 +21,13 @@ namespace SFERS.Controllers.Admin
 
         public async Task<IActionResult> Index()
         {
-            var reservations = await dbContext.Reservations
+            var reservations = await dbContext.Reservations.Include(r => r.Room)
                 .OrderBy(r => r.Status == ReservationStatus.Approved)
                 .ThenBy(r => r.Date)
                 .ThenBy(r => r.StartTime)
                 .ToListAsync();
 
-            // TODO: Fetch from Database
-            var reservationsView = new List<AdminReservationViewModel>();
-            foreach (var reservation in reservations)
-            {
-                var room = dbContext.Rooms.Find(reservation.RoomId);
-                var status = reservation.Status.ToString();
-                List<string> equipmentNames = await dbContext.ReservationEquipments
-                    .Where(re => re.ReservationId == reservation.Id)
-                    .Select(re => re.Equipment.Name)
-                    .ToListAsync();
-
-                reservationsView.Add(new AdminReservationViewModel
-                {
-                    Id = reservation.Id,
-                    RoomName = room != null ? room.Name : "Unknown",
-                    EquipmentNames = equipmentNames,
-                    Date = reservation.Date,
-                    TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
-                    Purpose = reservation.Purpose,
-                    Status = status
-                });
-            }
+            var reservationsView = await reservationManager.ConvertToViewModels(reservations);
 
             return View(reservationsView);
         }
@@ -79,6 +57,18 @@ namespace SFERS.Controllers.Admin
                 TempData["Error"] = ex.Message;
             }
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var reservation = await dbContext.Reservations.FindAsync(id);
+            if (reservation != null)
+            {
+                dbContext.Reservations.Remove(reservation);
+                await dbContext.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
         }
 

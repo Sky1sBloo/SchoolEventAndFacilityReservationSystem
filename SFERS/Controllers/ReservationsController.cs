@@ -36,17 +36,17 @@ namespace SFERS.Controllers
             {
                 var equipment = dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == r.Id)
-                    .Select(re => re.Equipment.Name)
+                    .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                     .ToList();
                 return new ReservationViewModel
                 {
                     Id = r.Id,
                     RoomName = r.Room?.Name ?? "Unassigned",
+                    EquipmentNames = equipment,
                     Date = r.Date,
                     TimeSlot = $"{r.StartTime:hh\\:mm} - {r.EndTime:hh\\:mm}",
                     Purpose = r.Purpose,
                     Status = r.Status.ToString(),
-                    EquipmentRequested = equipment.Count > 0 ? string.Join(", ", equipment) : null
                 };
             }).ToList();
 
@@ -157,7 +157,7 @@ namespace SFERS.Controllers
 
             var equipment = await dbContext.ReservationEquipments
                 .Where(re => re.ReservationId == reservation.Id)
-                .Select(re => re.Equipment.Name)
+                .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                 .ToListAsync();
 
             var vm = new ReservationViewModel
@@ -165,10 +165,10 @@ namespace SFERS.Controllers
                 Id = reservation.Id,
                 RoomName = reservation.Room?.Name ?? "Unknown",
                 Date = reservation.Date,
+                EquipmentNames = equipment,
                 TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
                 Purpose = reservation.Purpose,
                 Status = reservation.Status.ToString(),
-                EquipmentRequested = equipment.Count > 0 ? string.Join(", ", equipment) : null
             };
 
             return View(vm);

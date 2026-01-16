@@ -6,5 +6,7 @@ namespace SFERS.Models.ViewModel
     {
         public RoomViewModel Room { get; set; } = new RoomViewModel();
         public List<ReservationViewModel> UpcomingReservations { get; set; } = new List<ReservationViewModel>();
+
+        public ReservationViewModel? CurrentReservation { get; set; }
     }
 }

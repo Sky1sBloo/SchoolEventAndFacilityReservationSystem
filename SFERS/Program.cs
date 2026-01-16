@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorPages();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -44,6 +46,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapRazorPages();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

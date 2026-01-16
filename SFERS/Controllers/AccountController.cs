@@ -73,6 +73,11 @@ namespace SFERS.Controllers
                 ModelState.AddModelError("", "All fields are required.");
                 return View(model);
             }
+            if (dbContext.Accounts.Any(a => a.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "An account with this email already exists.");
+                return View(model);
+            }
 
             if (model.Password != model.ConfirmPassword)
             {

@@ -7,7 +7,8 @@ public enum ReservationStatus
 {
     Pending,
     Approved,
-    Declined
+    Declined,
+    Confirmed
 }
 public class Reservation
 {

@@ -119,19 +119,20 @@ namespace SFERS.Controllers
             await dbContext.Reservations.AddAsync(reservation);
             await dbContext.SaveChangesAsync();
 
-            if (model.EquipmentIds != null && model.EquipmentIds.Any())
+            if (model.EquipmentIds is IEnumerable<int> equipmentIds && equipmentIds.Any())
             {
                 var validEquipment = await dbContext.Equipments
-                    .Where(e => model.EquipmentIds.Contains(e.Id) && e.isAvailable)
-                    .Select(e => e.Id)
+                    .Where(e => equipmentIds.Contains(e.Id) && e.isAvailable)
                     .ToListAsync();
 
-                foreach (var eid in validEquipment)
+                foreach (var equipment in validEquipment)
                 {
                     dbContext.ReservationEquipments.Add(new ReservationEquipment
                     {
                         ReservationId = reservation.Id,
-                        EquipmentId = eid
+                        EquipmentId = equipment.Id,
+                        Reservation = reservation, // Set required navigation property
+                        Equipment = equipment      // Set required navigation property to fix CS9035
                     });
                 }
                 await dbContext.SaveChangesAsync();

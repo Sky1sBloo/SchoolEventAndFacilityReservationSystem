@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SFERS.Models.ViewModel
 {
     public class ReservationCreateViewModel
     {
-         {
+        [Required(ErrorMessage = "Please select at least one equipment.")]
+        public List<int>? EquipmentIds { get; set; } = new List<int>();
+
         [Required(ErrorMessage = "Please select a room.")]
         public int RoomId { get; set; }
 

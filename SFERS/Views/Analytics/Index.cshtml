@@ -2,14 +2,7 @@
     ViewData["Title"] = "Analytics";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-chart-line me-2"></i>Analytics & Insights</h2>
-    <div>
-        <button class="btn btn-outline-secondary me-2"><i class="fas fa-calendar"></i> This Year</button>
-        <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report</button>
-    </div>
-</div>
-
+<h2><i class="fas fa-chart-line me-2"></i>Analytics & Insights</h2>
 <div class="row g-4 mb-5">
     <div class="col-md-4">
         <div class="card h-100">
@@ -24,10 +17,30 @@
             <div class="card-body">
                 <h5 class="card-title">Peak Usage Hours</h5>
                 <table class="table table-bordered text-center table-sm mt-3" style="font-size: 0.8rem">
-                    <tr><td></td><td>Mon</td><td>Tue</td><td>Wed</td></tr>
-                    <tr><td>8AM</td><td class="bg-danger text-white">High</td><td class="bg-success text-white">Low</td><td class="bg-warning">Med</td></tr>
-                    <tr><td>12PM</td><td class="bg-success text-white">Low</td><td class="bg-danger text-white">High</td><td class="bg-warning">Med</td></tr>
-                    <tr><td>4PM</td><td class="bg-warning">Med</td><td class="bg-warning">Med</td><td class="bg-success text-white">Low</td></tr>
+                    <tr>
+                        <td></td>
+                        <td>Mon</td>
+                        <td>Tue</td>
+                        <td>Wed</td>
+                    </tr>
+                    <tr>
+                        <td>8AM</td>
+                        <td class="bg-danger text-white">High</td>
+                        <td class="bg-success text-white">Low</td>
+                        <td class="bg-warning">Med</td>
+                    </tr>
+                    <tr>
+                        <td>12PM</td>
+                        <td class="bg-success text-white">Low</td>
+                        <td class="bg-danger text-white">High</td>
+                        <td class="bg-warning">Med</td>
+                    </tr>
+                    <tr>
+                        <td>4PM</td>
+                        <td class="bg-warning">Med</td>
+                        <td class="bg-warning">Med</td>
+                        <td class="bg-success text-white">Low</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -65,10 +78,34 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Auditorium</td><td>Monday</td><td>08:00 - 12:00</td><td>1</td><td>General Assembly</td></tr>
-                <tr><td>Laboratory</td><td>Monday</td><td>13:00 - 15:00</td><td>1</td><td>CS Class</td></tr>
-                <tr><td>Room 3</td><td>Tuesday</td><td>09:00 - 10:30</td><td>1</td><td>Club Meeting</td></tr>
-                <tr><td>Auditorium</td><td>Wednesday</td><td>14:00 - 16:00</td><td>2</td><td>Rehearsals</td></tr>
+                <tr>
+                    <td>Auditorium</td>
+                    <td>Monday</td>
+                    <td>08:00 - 12:00</td>
+                    <td>1</td>
+                    <td>General Assembly</td>
+                </tr>
+                <tr>
+                    <td>Laboratory</td>
+                    <td>Monday</td>
+                    <td>13:00 - 15:00</td>
+                    <td>1</td>
+                    <td>CS Class</td>
+                </tr>
+                <tr>
+                    <td>Room 3</td>
+                    <td>Tuesday</td>
+                    <td>09:00 - 10:30</td>
+                    <td>1</td>
+                    <td>Club Meeting</td>
+                </tr>
+                <tr>
+                    <td>Auditorium</td>
+                    <td>Wednesday</td>
+                    <td>14:00 - 16:00</td>
+                    <td>2</td>
+                    <td>Rehearsals</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -77,7 +114,7 @@
 @section Scripts {
     <script>
         // Ensure Chart.js is loaded
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
 
             // Bar Chart Config
             const ctxBar = document.getElementById('mostUsedChart');

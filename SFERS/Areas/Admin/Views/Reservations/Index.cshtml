@@ -89,6 +89,12 @@
                                         Processed
                                     </button>
                                 }
+                                <form asp-action="Delete" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> 
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     }

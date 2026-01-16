@@ -60,6 +60,18 @@ namespace SFERS.Controllers.Admin
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var reservation = await dbContext.Reservations.FindAsync(id);
+            if (reservation != null)
+            {
+                dbContext.Reservations.Remove(reservation);
+                await dbContext.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
         private async Task LogReservation(int reservationId)
         {
             var log = new ReservationLog

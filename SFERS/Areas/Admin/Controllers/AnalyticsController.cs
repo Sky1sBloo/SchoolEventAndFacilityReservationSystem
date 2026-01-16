@@ -21,7 +21,7 @@ namespace SFERS.Controllers.Admin
         {
             var model = new AdminAnalyticsViewModel();
             var reservationLogs = await dbContext.ReservationLogs.Include(log => log.Reservation)
-                           .ThenInclude(r => r.Room).Where(l => l.Reservation != null && l.Reservation.Room != null)
+                           .ThenInclude(r => r != null ? r.Room : null).Where(l => l.Reservation != null && l.Reservation.Room != null)
                            .OrderByDescending(r => r.Timestamp).ToListAsync();
 
             foreach (var log in reservationLogs)
@@ -29,7 +29,7 @@ namespace SFERS.Controllers.Admin
                 var roomName = log.Reservation?.Room?.Name ?? "Unknown";
                 var duration = log.Reservation != null ? log.Reservation.EndTime - log.Reservation.StartTime : TimeSpan.Zero;
                 var equipmentList = await dbContext.ReservationEquipments.Where(r => r.ReservationId == log.ReservationId)
-                    .Select(r => r.Equipment.Name).ToListAsync();
+                    .Select(r => r.Equipment != null ? r.Equipment.Name : "Unknown").ToListAsync();
                 model.ReservationLogs.Add(new ReservationLogViewModel
                 {
                     Id = log.Id,

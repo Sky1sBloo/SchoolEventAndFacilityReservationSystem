@@ -36,7 +36,7 @@ namespace SFERS.Controllers
             {
                 var equipment = dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == r.Id)
-                    .Select(re => re.Equipment.Name)
+                    .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                     .ToList();
                 return new ReservationViewModel
                 {
@@ -157,7 +157,7 @@ namespace SFERS.Controllers
 
             var equipment = await dbContext.ReservationEquipments
                 .Where(re => re.ReservationId == reservation.Id)
-                .Select(re => re.Equipment.Name)
+                .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                 .ToListAsync();
 
             var vm = new ReservationViewModel

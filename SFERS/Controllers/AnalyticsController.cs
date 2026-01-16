@@ -61,7 +61,7 @@ namespace SFERS.Controllers
                 {
                     model.EquipmentUsages[usage.EquipmentId] = new EquipmentUsageViewModel
                     {
-                        EquipmentName = usage.Equipment.Name,
+                        EquipmentName = usage.Equipment != null ? usage.Equipment.Name : "Unknown",
                         UsageCount = 0
                     };
                 }

@@ -62,7 +62,7 @@ namespace SFERS.Controllers
             {
                 var reqEquip = await dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == r.Id)
-                    .Select(re => re.Equipment.Name)
+                    .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                     .ToListAsync();
 
                 reservationViewModels.Add(new ReservationViewModel

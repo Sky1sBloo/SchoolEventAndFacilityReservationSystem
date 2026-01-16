@@ -65,7 +65,7 @@ namespace SFERS.Utilities
             await dbContext.SaveChangesAsync();
         }
 
-        public bool IsReservationConflicts(Reservation reservation1, Reservation reservation2)
+        public static bool IsReservationConflicts(Reservation reservation1, Reservation reservation2)
         {
             if (reservation1.Date != reservation2.Date)
             {
@@ -78,7 +78,7 @@ namespace SFERS.Utilities
             return reservation1.StartTime < reservation2.EndTime && reservation2.StartTime < reservation1.EndTime;
         }
 
-        public bool IsReservationEquipmentConflict(Reservation reservation1, Reservation reservation2, List<ReservationEquipment> reservationEquipments)
+        public static bool IsReservationEquipmentConflict(Reservation reservation1, Reservation reservation2, List<ReservationEquipment> reservationEquipments)
         {
             var reservedEquipment1 = reservationEquipments
                 .Where(re => re.ReservationId == reservation1.Id)
@@ -115,7 +115,7 @@ namespace SFERS.Utilities
             {
                 List<string> equipmentNames = await dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == reservation.Id)
-                    .Select(re => re.Equipment.Name)
+                    .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
                     .ToListAsync();
 
                 reservationViewModels.Add(new ReservationViewModel

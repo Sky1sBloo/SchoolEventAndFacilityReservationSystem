@@ -32,8 +32,8 @@ namespace SFERS.Utilities
                     .Select(re => re.EquipmentId)
                     .ToListAsync();
 
-                bool isEqipmentConflict = reservation.RoomId == null && reservedEquipment.Intersect(equipment.Select(e => e.EquipmentId)).Any();
-                if (isEqipmentConflict || reservation.RoomId != null)
+                bool isEqipmentConflict = IsReservationEquipmentConflict(reservation, res, await dbContext.ReservationEquipments.ToListAsync());
+                if (isEqipmentConflict || (reservation.RoomId != null && reservation.RoomId == res.RoomId))
                 {
                     if (res.Status == ReservationStatus.Approved &&
                         IsReservationConflicts(reservation, res))
@@ -69,7 +69,26 @@ namespace SFERS.Utilities
             {
                 return false;
             }
+            if (reservation1.EndTime <= reservation1.StartTime || reservation2.EndTime <= reservation2.StartTime)
+            {
+                throw new ArgumentException("End time must be after start time.");
+            }
             return reservation1.StartTime < reservation2.EndTime && reservation2.StartTime < reservation1.EndTime;
+        }
+
+        public bool IsReservationEquipmentConflict(Reservation reservation1, Reservation reservation2, List<ReservationEquipment> reservationEquipments)
+        {
+            var reservedEquipment1 = reservationEquipments
+                .Where(re => re.ReservationId == reservation1.Id)
+                .Select(re => re.EquipmentId)
+                .ToList();
+
+            var reservedEquipment2 = reservationEquipments
+                .Where(re => re.ReservationId == reservation2.Id)
+                .Select(re => re.EquipmentId)
+                .ToList();
+
+            return reservedEquipment1.Intersect(reservedEquipment2).Any();
         }
 
         public async Task LogReservation(int reservationId)

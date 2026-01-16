@@ -1,5 +1,5 @@
 ﻿@model SFERS.Models.ViewModel.RoomDetailsViewModel
- 
+
 <div class="modal fade" id="roomDetailModal_@Model.Room.Id" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -35,15 +35,18 @@
                         <div class="card-body d-flex justify-content-between align-items-start">
                             <div>
                                 <div class="fw-bold">@Model.CurrentReservation.RoomName</div>
-                                <div class="small text-muted">@Model.CurrentReservation.Date.ToShortDateString() &nbsp; | &nbsp; @Model.CurrentReservation.TimeSlot</div>
+                                <div class="small text-muted">@Model.CurrentReservation.Date.ToShortDateString() &nbsp; |
+                                    &nbsp; @Model.CurrentReservation.TimeSlot</div>
                                 <div class="small mt-2">@Model.CurrentReservation.Purpose</div>
-                                @if (!string.IsNullOrEmpty(Model.CurrentReservation.EquipmentRequested))
+                                <span class="mt-2 small text-muted">Equipment:</span>
+                                @foreach (var equip in Model.CurrentReservation.EquipmentNames)
                                 {
-                                    <div class="mt-2 small text-muted">Equipment: @Model.CurrentReservation.EquipmentRequested</div>
+                                    <span class="badge bg-secondary me-1 mt-2">@equip</span>
                                 }
                             </div>
                             <div class="text-end">
-                                <span class="badge @(Model.CurrentReservation.Status == "Approved" ? "bg-success" : Model.CurrentReservation.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">
+                                <span
+                                    class="badge @(Model.CurrentReservation.Status == "Approved" ? "bg-success" : Model.CurrentReservation.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">
                                     @Model.CurrentReservation.Status
                                 </span>
                             </div>
@@ -65,23 +68,22 @@
                         {
                             <div class="list-group-item d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">
-                                    <div class="fw-bold">@res.Date.ToShortDateString() &nbsp; <small class="text-muted">| @res.TimeSlot</small></div>
+                                    <div class="fw-bold">@res.Date.ToShortDateString() &nbsp; <small class="text-muted">|
+                                            @res.TimeSlot</small></div>
                                     <div class="small text-muted">@res.Purpose</div>
-                                    @if (!string.IsNullOrEmpty(res.EquipmentRequested))
+                                    @if (res.EquipmentNames != null && res.EquipmentNames.Any())
                                     {
                                         <div class="mt-2">
-                                            @foreach (var e in (res.EquipmentRequested ?? "").Split(',').Select(s => s.Trim()))
+                                            @foreach (var equip in res.EquipmentNames)
                                             {
-                                                if (!string.IsNullOrEmpty(e))
-                                                {
-                                                    <span class="badge bg-secondary me-1">@e</span>
-                                                }
+                                                <span class="badge bg-secondary me-1">@equip</span>
                                             }
                                         </div>
                                     }
                                 </div>
                                 <div class="text-end">
-                                    <span class="badge @(res.Status == "Approved" ? "bg-success" : res.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">@res.Status</span>
+                                    <span
+                                        class="badge @(res.Status == "Approved" ? "bg-success" : res.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">@res.Status</span>
                                 </div>
                             </div>
                         }
@@ -93,7 +95,8 @@
                 }
             </div>
             <div class="modal-footer">
-                <a asp-controller="Reservations" asp-action="Create" asp-route-roomId="@Model.Room.Id" class="btn btn-primary">Reserve Now</a>
+                <a asp-controller="Reservations" asp-action="Create" asp-route-roomId="@Model.Room.Id"
+                    class="btn btn-primary">Reserve Now</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>

@@ -5,6 +5,7 @@ using SFERS.Data;
 using SFERS.Models;
 using SFERS.Models.Entities;
 using SFERS.Models.ViewModel;
+using SFERS.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +16,12 @@ namespace SFERS.Controllers
     public class RoomsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ReservationManager reservationManager;
 
-        public RoomsController(ApplicationDbContext context)
+        public RoomsController(ApplicationDbContext context, ReservationManager reservationMgr)
         {
             dbContext = context;
+            reservationManager = reservationMgr;
         }
 
         public async Task<IActionResult> Index()
@@ -61,11 +64,13 @@ namespace SFERS.Controllers
             ReservationViewModel? currentVm = null;
             if (currentReservationEntity != null)
             {
+                currentVm = await reservationManager.ConvertToViewModel(currentReservationEntity);
+                /*
                 var currentEquip = await dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == currentReservationEntity.Id)
                     .Select(re => re.Equipment.Name)
                     .ToListAsync();
-
+                
                 currentVm = new ReservationViewModel
                 {
                     Id = currentReservationEntity.Id,
@@ -75,7 +80,7 @@ namespace SFERS.Controllers
                     Purpose = currentReservationEntity.Purpose,
                     Status = currentReservationEntity.Status.ToString(),
                     EquipmentRequested = currentEquip.Count > 0 ? string.Join(", ", currentEquip) : null
-                };
+                }; */
             }
 
             // Upcoming reservations: today (but after now) and future days

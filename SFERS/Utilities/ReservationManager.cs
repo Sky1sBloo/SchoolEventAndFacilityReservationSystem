@@ -131,5 +131,23 @@ namespace SFERS.Utilities
             }
             return reservationViewModels;
         }
+
+        public async Task<ReservationViewModel> ConvertToViewModel(Reservation reservation)
+        {
+            List<string> equipmentNames = await dbContext.ReservationEquipments
+                .Where(re => re.ReservationId == reservation.Id)
+                .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
+                .ToListAsync();
+
+            return new ReservationViewModel
+            {
+                Id = reservation.Id,
+                RoomName = reservation.Room != null ? reservation.Room.Name : "Unknown",
+                Date = reservation.Date,
+                TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
+                Status = reservation.Status.ToString(),
+                Purpose = reservation.Purpose
+            };
+        }
     }
 }

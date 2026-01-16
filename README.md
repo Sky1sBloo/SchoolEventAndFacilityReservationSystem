@@ -2,10 +2,15 @@
 
 ## Requirements
 - dotnet
+- docker (optional)
 
 ## Installation 
 1. Request `.env` file for developers or define `SA_PASSWORD` in the `.env` file.
-2. Build the program
+2. Add set user secrets from the requested connection string
+```
+dotnet user-secrets set "ConnectionStrings:SFERS_Db" <connection string>
+```
+4. Build the program
 ```
 dotnet build
 ```

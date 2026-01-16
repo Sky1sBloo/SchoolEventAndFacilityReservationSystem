@@ -30,12 +30,22 @@ namespace SFERS.Controllers
                 .OrderBy(r => r.Name)
                 .ToListAsync();
 
+            var reservationToday = await dbContext.Reservations.Where(r => r.Date == DateTime.Today).ToListAsync();
+            var isInUse = new List<Reservation>();
+            foreach (var res in reservationToday)
+            {
+                if (res.StartTime <= DateTime.Now.TimeOfDay && res.EndTime > DateTime.Now.TimeOfDay)
+                {
+                    isInUse.Add(res);
+                }
+            }
+
             var model = rooms.Select(r => new RoomViewModel
             {
                 Id = r.Id,
                 Name = r.Name,
                 Capacity = r.Capacity,
-                IsAvailable = true, // keep simple; availability can be refined
+                IsAvailable = !isInUse.Any(res => res.RoomId == r.Id),
                 Equipment = dbContext.Equipments.Where(e => e.RoomId == r.Id).Select(e => e.Name).ToList()
             }).ToList();
 
@@ -56,7 +66,6 @@ namespace SFERS.Controllers
             var today = DateTime.Today;
             var timeNow = System.DateTime.Now.TimeOfDay;
 
-            // Current (ongoing) reservation for this room (today where start <= now < end)
             var currentReservationEntity = await dbContext.Reservations
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.RoomId == id && r.Date == today && r.StartTime <= timeNow && r.EndTime > timeNow);
@@ -65,25 +74,8 @@ namespace SFERS.Controllers
             if (currentReservationEntity != null)
             {
                 currentVm = await reservationManager.ConvertToViewModel(currentReservationEntity);
-                /*
-                var currentEquip = await dbContext.ReservationEquipments
-                    .Where(re => re.ReservationId == currentReservationEntity.Id)
-                    .Select(re => re.Equipment.Name)
-                    .ToListAsync();
-                
-                currentVm = new ReservationViewModel
-                {
-                    Id = currentReservationEntity.Id,
-                    RoomName = room.Name,
-                    Date = currentReservationEntity.Date,
-                    TimeSlot = $"{currentReservationEntity.StartTime:hh\\:mm} - {currentReservationEntity.EndTime:hh\\:mm}",
-                    Purpose = currentReservationEntity.Purpose,
-                    Status = currentReservationEntity.Status.ToString(),
-                    EquipmentRequested = currentEquip.Count > 0 ? string.Join(", ", currentEquip) : null
-                }; */
             }
 
-            // Upcoming reservations: today (but after now) and future days
             var upcomingReservationsEntities = await dbContext.Reservations
                 .Where(r => r.RoomId == id && (r.Date > today || (r.Date == today && r.EndTime > timeNow)))
                 .OrderBy(r => r.Date)
@@ -93,7 +85,6 @@ namespace SFERS.Controllers
             var reservationViewModels = new List<ReservationViewModel>();
             foreach (var r in upcomingReservationsEntities)
             {
-                // skip the current reservation if it somehow matches (shouldn't if filter is correct)
                 if (currentReservationEntity != null && r.Id == currentReservationEntity.Id)
                     continue;
 

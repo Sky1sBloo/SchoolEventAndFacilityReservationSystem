@@ -1,10 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Analytics";
 }
+@model SFERS.Models.ViewModel.AnalyticsViewModel
 
 <h2><i class="fas fa-chart-line me-2"></i>Analytics & Insights</h2>
 <div class="row g-4 mb-5">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">Most Used Rooms</h5>
@@ -12,40 +13,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">Peak Usage Hours</h5>
-                <table class="table table-bordered text-center table-sm mt-3" style="font-size: 0.8rem">
-                    <tr>
-                        <td></td>
-                        <td>Mon</td>
-                        <td>Tue</td>
-                        <td>Wed</td>
-                    </tr>
-                    <tr>
-                        <td>8AM</td>
-                        <td class="bg-danger text-white">High</td>
-                        <td class="bg-success text-white">Low</td>
-                        <td class="bg-warning">Med</td>
-                    </tr>
-                    <tr>
-                        <td>12PM</td>
-                        <td class="bg-success text-white">Low</td>
-                        <td class="bg-danger text-white">High</td>
-                        <td class="bg-warning">Med</td>
-                    </tr>
-                    <tr>
-                        <td>4PM</td>
-                        <td class="bg-warning">Med</td>
-                        <td class="bg-warning">Med</td>
-                        <td class="bg-success text-white">Low</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
+    
+    <div class="col-md-3">
         <div class="card h-100">
             <div class="card-body">
                 <h5 class="card-title">Equipment Demand</h5>
@@ -58,87 +27,83 @@
 <div class="card mb-4">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
         <h5 class="mb-0">Weekly Usage Report</h5>
-        <div class="d-flex gap-2">
-            <select class="form-select form-select-sm" style="width: 150px;">
-                <option>All Rooms</option>
-                <option>Auditorium</option>
-            </select>
-            <input type="week" class="form-control form-control-sm" value="2025-W01">
-        </div>
     </div>
     <div class="card-body p-0">
-        <table class="table table-striped mb-0">
-            <thead>
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>Room</th>
-                    <th>Day</th>
+                    <th>Date</th>
                     <th>Time Slot</th>
-                    <th>Usage Count</th>
-                    <th>Primary Purpose</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Auditorium</td>
-                    <td>Monday</td>
-                    <td>08:00 - 12:00</td>
-                    <td>1</td>
-                    <td>General Assembly</td>
-                </tr>
-                <tr>
-                    <td>Laboratory</td>
-                    <td>Monday</td>
-                    <td>13:00 - 15:00</td>
-                    <td>1</td>
-                    <td>CS Class</td>
-                </tr>
-                <tr>
-                    <td>Room 3</td>
-                    <td>Tuesday</td>
-                    <td>09:00 - 10:30</td>
-                    <td>1</td>
-                    <td>Club Meeting</td>
-                </tr>
-                <tr>
-                    <td>Auditorium</td>
-                    <td>Wednesday</td>
-                    <td>14:00 - 16:00</td>
-                    <td>2</td>
-                    <td>Rehearsals</td>
-                </tr>
+                @foreach (var item in Model.RecentReservations)
+                {
+                    <tr>
+                        <td class="fw-semibold">
+                            @item.RoomName
+                        </td>
+                        <td>@item.Date.ToShortDateString()</td>
+                        <td>@item.TimeSlot</td>
+                        <td>@item.Purpose</td>
+                        <td>
+                            @if (item.Status == "Approved")
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else if (item.Status == "Declined")
+                            {
+                                <span class="badge bg-danger">Declined</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
 
+
 @section Scripts {
     <script>
-        // Ensure Chart.js is loaded
         document.addEventListener("DOMContentLoaded", function () {
+            // Extract data from model dictionaries
+            const roomLabels = @Html.Raw(Json.Serialize(Model.MonthlyReservationCounts.Values.Select(r => r.RoomName)));
+            const roomData = @Html.Raw(Json.Serialize(Model.MonthlyReservationCounts.Values.Select(r => r.UsageCount)));
+            
+            const equipmentLabels = @Html.Raw(Json.Serialize(Model.EquipmentUsages.Values.Select(e => e.EquipmentName)));
+            const equipmentData = @Html.Raw(Json.Serialize(Model.EquipmentUsages.Values.Select(e => e.UsageCount)));
 
-            // Bar Chart Config
+            // Bar Chart - Most Used Rooms
             const ctxBar = document.getElementById('mostUsedChart');
             new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: ['Audit', 'Lab', 'Rm 3', 'Rm 4', 'Rm 5'],
+                    labels: roomLabels,
                     datasets: [{
                         label: '# of Bookings',
-                        data: [120, 90, 45, 30, 60],
+                        data: roomData,
                         backgroundColor: '#3498db'
                     }]
                 }
             });
 
-            // Pie Chart Config
+            // Pie Chart - Equipment Demand
             const ctxPie = document.getElementById('equipmentPieChart');
             new Chart(ctxPie, {
                 type: 'pie',
                 data: {
-                    labels: ['Projector', 'Mic', 'Laptop', 'Speaker'],
+                    labels: equipmentLabels,
                     datasets: [{
-                        data: [40, 20, 15, 25],
-                        backgroundColor: ['#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6']
+                        data: equipmentData,
+                        backgroundColor: ['#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#1abc9c', '#e67e22']
                     }]
                 }
             });

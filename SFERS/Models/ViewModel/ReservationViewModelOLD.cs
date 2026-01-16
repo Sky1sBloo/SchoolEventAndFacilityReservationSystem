@@ -11,7 +11,7 @@ namespace SFERS.Models.ViewModel
         public List<ReservationViewModel>? RecentActivity { get; set; }
     }
 
-    public class ReservationViewModel
+    public class ReservationViewModelOld
     {
         public int Id { get; set; }
         public string? RoomName { get; set; }

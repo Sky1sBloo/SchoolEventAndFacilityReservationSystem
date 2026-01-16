@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
 using SFERS.Models.Entities;
+using SFERS.Models.ViewModel;
 
 namespace SFERS.Utilities
 {
@@ -41,7 +42,8 @@ namespace SFERS.Utilities
                         if (isEqipmentConflict)
                         {
                             throw new InvalidOperationException("Equipment conflicts with an existing approved reservation.");
-                        } else
+                        }
+                        else
                         {
                             throw new InvalidOperationException("Room conflicts with an existing approved reservation.");
                         }
@@ -106,5 +108,28 @@ namespace SFERS.Utilities
             }
         }
 
+        public async Task<List<ReservationViewModel>> ConvertToViewModels(List<Reservation> reservations)
+        {
+            var reservationViewModels = new List<ReservationViewModel>();
+            foreach (var reservation in reservations)
+            {
+                List<string> equipmentNames = await dbContext.ReservationEquipments
+                    .Where(re => re.ReservationId == reservation.Id)
+                    .Select(re => re.Equipment.Name)
+                    .ToListAsync();
+
+                reservationViewModels.Add(new ReservationViewModel
+                {
+                    Id = reservation.Id,
+                    RoomName = reservation.Room != null ? reservation.Room.Name : "Unknown",
+
+                    Date = reservation.Date,
+                    TimeSlot = $"{reservation.StartTime:hh\\:mm} - {reservation.EndTime:hh\\:mm}",
+                    Status = reservation.Status.ToString(),
+                    Purpose = reservation.Purpose
+                });
+            }
+            return reservationViewModels;
+        }
     }
 }

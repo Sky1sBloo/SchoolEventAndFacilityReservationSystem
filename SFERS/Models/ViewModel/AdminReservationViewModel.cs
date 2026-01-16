@@ -1,6 +1,6 @@
 ﻿namespace SFERS.Models.ViewModel
 {
-    public class AdminReservationViewModel
+    public class ReservationViewModel
     {
         public int Id { get; set; }
         public required string RoomName { get; set; }

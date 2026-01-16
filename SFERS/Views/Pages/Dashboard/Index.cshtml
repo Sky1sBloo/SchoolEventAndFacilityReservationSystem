@@ -1,0 +1,107 @@
+﻿@page
+@model SFERS.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container py-4">
+    <h2>Dashboard</h2>
+
+    <div class="row g-3 my-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Current Booking</h6>
+                    @if (Model.CurrentBooking != null)
+                    {
+                        <div>
+                            <div class="fw-bold">@Model.CurrentBooking.RoomName</div>
+                            <div class="small text-muted">@Model.CurrentBooking.Date.ToShortDateString() &nbsp; | &nbsp; @Model.CurrentBooking.TimeSlot</div>
+                            <div class="mt-2">@Model.CurrentBooking.Purpose</div>
+                            <div class="mt-2">
+                                <span class="badge @(Model.CurrentBooking.Status == "Approved" ? "bg-success" : Model.CurrentBooking.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">
+                                    @Model.CurrentBooking.Status
+                                </span>
+                            </div>
+                            @if (Model.CurrentBooking.EquipmentNames?.Any() == true)
+                            {
+                                <div class="mt-2 small text-muted">Equipment: @string.Join(", ", Model.CurrentBooking.EquipmentNames)</div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted">No active booking right now.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Completed Bookings</h6>
+                    <p class="display-6 m-0">@Model.CompletedBookingsCount</p>
+                    <small class="text-muted">Bookings that have already ended</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Your Upcoming Bookings</h6>
+                    <p class="display-6 m-0">@Model.UpcomingBookingsCount</p>
+                    <small class="text-muted">Bookings you have scheduled for later</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <strong>Future Bookings by Other Users (today and onward)</strong>
+        </div>
+        <div class="card-body">
+            @if (Model.FutureBookingsByOthers != null && Model.FutureBookingsByOthers.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th>Room</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.FutureBookingsByOthers)
+                            {
+                                <tr>
+                                    <td>@r.UserName</td>
+                                    <td>@r.RoomName</td>
+                                    <td>@r.Date.ToShortDateString()</td>
+                                    <td>@r.TimeSlot</td>
+                                    <td>@r.Purpose</td>
+                                    <td>
+                                        <span class="badge @(r.Status == "Approved" ? "bg-success" : r.Status == "Declined" ? "bg-danger" : "bg-warning text-dark")">
+                                            @r.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-muted">No future bookings by other users found.</div>
+            }
+        </div>
+    </div>
+</div>
+}

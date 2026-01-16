@@ -5,6 +5,7 @@ using SFERS.Data;
 using SFERS.Models;
 using SFERS.Models.Entities;
 using SFERS.Models.ViewModel;
+using SFERS.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +16,12 @@ namespace SFERS.Controllers
     public class RoomsController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ReservationManager reservationManager;
 
-        public RoomsController(ApplicationDbContext context)
+        public RoomsController(ApplicationDbContext context, ReservationManager reservationMgr)
         {
             dbContext = context;
+            reservationManager = reservationMgr;
         }
 
         public async Task<IActionResult> Index()
@@ -27,12 +30,22 @@ namespace SFERS.Controllers
                 .OrderBy(r => r.Name)
                 .ToListAsync();
 
+            var reservationToday = await dbContext.Reservations.Where(r => r.Date == DateTime.Today).ToListAsync();
+            var isInUse = new List<Reservation>();
+            foreach (var res in reservationToday)
+            {
+                if (res.StartTime <= DateTime.Now.TimeOfDay && res.EndTime > DateTime.Now.TimeOfDay)
+                {
+                    isInUse.Add(res);
+                }
+            }
+
             var model = rooms.Select(r => new RoomViewModel
             {
                 Id = r.Id,
                 Name = r.Name,
                 Capacity = r.Capacity,
-                IsAvailable = true, // keep simple; availability can be refined
+                IsAvailable = !isInUse.Any(res => res.RoomId == r.Id),
                 Equipment = dbContext.Equipments.Where(e => e.RoomId == r.Id).Select(e => e.Name).ToList()
             }).ToList();
 
@@ -51,15 +64,30 @@ namespace SFERS.Controllers
                 .ToListAsync();
 
             var today = DateTime.Today;
-            var reservations = await dbContext.Reservations
-                .Where(r => r.RoomId == id && r.Date >= today)
+            var timeNow = System.DateTime.Now.TimeOfDay;
+
+            var currentReservationEntity = await dbContext.Reservations
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.RoomId == id && r.Date == today && r.StartTime <= timeNow && r.EndTime > timeNow);
+
+            ReservationViewModel? currentVm = null;
+            if (currentReservationEntity != null)
+            {
+                currentVm = await reservationManager.ConvertToViewModel(currentReservationEntity);
+            }
+
+            var upcomingReservationsEntities = await dbContext.Reservations
+                .Where(r => r.RoomId == id && (r.Date > today || (r.Date == today && r.EndTime > timeNow)))
                 .OrderBy(r => r.Date)
                 .ThenBy(r => r.StartTime)
                 .ToListAsync();
 
             var reservationViewModels = new List<ReservationViewModel>();
-            foreach (var r in reservations)
+            foreach (var r in upcomingReservationsEntities)
             {
+                if (currentReservationEntity != null && r.Id == currentReservationEntity.Id)
+                    continue;
+
                 var reqEquip = await dbContext.ReservationEquipments
                     .Where(re => re.ReservationId == r.Id)
                     .Select(re => re.Equipment != null ? re.Equipment.Name : "Unknown")
@@ -84,10 +112,11 @@ namespace SFERS.Controllers
                     Id = room.Id,
                     Name = room.Name,
                     Capacity = room.Capacity,
-                    IsAvailable = true,
+                    IsAvailable = currentReservationEntity == null, // available if no current reservation
                     Equipment = equipments
                 },
-                UpcomingReservations = reservationViewModels
+                UpcomingReservations = reservationViewModels,
+                CurrentReservation = currentVm
             };
 
             return PartialView("_RoomDetailsModal", vm);
@@ -217,6 +246,25 @@ namespace SFERS.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet("api/rooms/{roomId}/reservations")]
+        public async Task<IActionResult> GetRoomReservations(int roomId)
+        {
+            var reservations = await dbContext.Reservations
+                .Where(r => r.RoomId == roomId && r.Date >= DateTime.Today)
+                .OrderByDescending(r => r.Date)
+                .Select(r => new
+                {
+                    r.Date,
+                    startTime = r.StartTime.ToString(@"hh\:mm"),
+                    endTime = r.EndTime.ToString(@"hh\:mm"),
+                    r.Purpose,
+                    status = r.Status.ToString()
+                })
+                .ToListAsync();
+
+            return Json(reservations);
         }
     }
 

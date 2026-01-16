@@ -1,7 +1,9 @@
 @model SFERS.Models.ViewModel.ReservationCreateViewModel
 @{
     ViewData["Title"] = "Book a Room";
-}
+    var rooms = ViewData["Rooms"] as List<SFERS.Models.Entities.Room> ?? new List<SFERS.Models.Entities.Room>();
+    var equipments = ViewData["Equipments"] as List<SFERS.Models.Entities.Equipment> ?? new List<SFERS.Models.Entities.Equipment>();
+}   
 
 <div class="container">
     <div class="row justify-content-center">
@@ -12,71 +14,68 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="Create" method="post">
-                        @* Added validation summary *@
+                        @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Select Room</label>
-                                @* Updated room names to match Designer 2 *@
-                                <select class="form-select" asp-for="RoomName" required>
+                                <select class="form-select" asp-for="RoomId" required>
                                     <option value="">Choose a room...</option>
-                                    <option>Auditorium</option>
-                                    <option>Laboratory</option>
-                                    <option>Room 3</option>
-                                    <option>Room 4</option>
-                                    <option>Room 5</option>
+                                    @foreach (var r in rooms)
+                                    {
+                                        <option value="@r.Id" selected="@(Model.RoomId == r.Id ? "selected" : null)">@r.Name</option>
+                                    }
                                 </select>
+                                <span asp-validation-for="RoomId" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Date</label>
-                                <input type="date" class="form-control" asp-for="Date" required>
+                                <input type="date" class="form-control" asp-for="Date" required />
+                                <span asp-validation-for="Date" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Time Slot</label>
-                            <select class="form-select" asp-for="TimeSlot" required>
-                                <option value="">Choose a time slot...</option>
-                                <option>08:00 AM - 10:00 AM</option>
-                                <option>10:00 AM - 12:00 PM</option>
-                                <option>01:00 PM - 03:00 PM</option>
-                                <option>03:00 PM - 05:00 PM</option>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-control" asp-for="StartTime" required />
+                                <span asp-validation-for="StartTime" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">End Time</label>
+                                <input type="time" class="form-control" asp-for="EndTime" required />
+                                <span asp-validation-for="EndTime" class="text-danger"></span>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Equipment Needed (Optional)</label>
-                            @* Updated equipment names to match Designer 2 *@
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="TV" id="projector">
-                                <label class="form-check-label" for="TV">TV</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Epson Pro Projector" id="projector">
-                                <label class="form-check-label" for="projector">Epson Pro Projector</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="JBL PartyBox" id="sound">
-                                <label class="form-check-label" for="sound">JBL PartyBox</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Shure Wireless Mic" id="mic">
-                                <label class="form-check-label" for="mic">Shure Wireless Mic</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Lenovo Thinkpad T1" id="laptop">
-                                <label class="form-check-label" for="laptop">Lenovo Thinkpad T1</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Whiteboard" id="projector">
-                                <label class="form-check-label" for="board">Whiteboard</label>
-                            </div>
+                            @if (equipments.Any())
+                            {
+                                <div class="row">
+                                    @foreach (var e in equipments)
+                                    {
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="EquipmentIds" value="@e.Id" id="equip_@e.Id"
+                                                       @(Model.EquipmentIds != null && Model.EquipmentIds.Contains(e.Id) ? "checked" : "") />
+                                                <label class="form-check-label" for="equip_@e.Id">@e.Name</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-muted small">No available equipment.</div>
+                            }
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Purpose of Reservation</label>
                             <textarea class="form-control" rows="3" asp-for="Purpose" placeholder="e.g., Class presentation for Biology 101" required></textarea>
+                            <span asp-validation-for="Purpose" class="text-danger"></span>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -89,3 +88,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -3,65 +3,37 @@
 }
 @model SFERS.Models.ViewModel.AdminAnalyticsViewModel
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6">Report Configurations</h5>
-                <button class="btn btn-sm btn-light py-0">+</button>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Monthly Usage (PDF)
-                    <div>
-                        <i class="fas fa-edit text-primary cursor-pointer"></i>
-                        <i class="fas fa-trash text-danger ms-2 cursor-pointer"></i>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Damaged Equip. List
-                    <div>
-                        <i class="fas fa-edit text-primary cursor-pointer"></i>
-                        <i class="fas fa-trash text-danger ms-2 cursor-pointer"></i>
-                    </div>
-                </li>
-            </ul>
-        </div>
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Manual Log Entry (Data Correction)</h5>
     </div>
-
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Manual Log Entry (Data Correction)</h5>
+    <div class="card-body">
+        <form method="post" asp-action="InsertLog" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Reservation</label>
+                <select class="form-select" asp-for="SelectedReservation">
+                    <option value="">-- Select a reservation --</option>
+                    @foreach (var reservation in Model.ApprovedReservations)
+                    {
+                        <option value="@reservation.Id">
+                            Reservation #@reservation.Id - @(reservation.Room != null ? reservation.Room.Name : "No Room")
+                            on @reservation.Date.ToString("yyyy-MM-dd")
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="SelectedReservation" class="text-danger"></span>
             </div>
-            <div class="card-body">
-                <form method="post" asp-action="InsertLog" class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Reservation</label>
-                        <select class="form-select" asp-for="SelectedReservation">
-                            <option value="">-- Select a reservation --</option>
-                            @foreach (var reservation in Model.ApprovedReservations)
-                            {
-                                <option value="@reservation.Id">
-                                    Reservation #@reservation.Id - @(reservation.Room != null ? reservation.Room.Name : "No             Room") on @reservation.Date.ToString("yyyy-MM-dd")
-                                </option>
-                            }
-                        </select>
-                        <span asp-validation-for="SelectedReservation" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Date</label>
-                        <input type="date" asp-for="SelectedDate" class="form-control">
-                        <span asp-validation-for="SelectedDate" class="text-danger"></span>
-                    </div>
-                    <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-warning text-dark">
-                            <i class="fas fa-plus-circle me-1"></i> Inject Historical Record
-                        </button>
-                    </div>
-                </form>
+            <div class="col-md-6">
+                <label class="form-label">Date</label>
+                <input type="date" asp-for="SelectedDate" class="form-control">
+                <span asp-validation-for="SelectedDate" class="text-danger"></span>
             </div>
-        </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-warning text-dark">
+                    <i class="fas fa-plus-circle me-1"></i> Inject Historical Record
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

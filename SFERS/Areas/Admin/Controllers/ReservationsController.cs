@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SFERS.Data;
 using SFERS.Models.Entities;
-using SFERS.Models.ViewModel; 
+using SFERS.Models.ViewModel;
+using SFERS.Utilities;
 
 namespace SFERS.Controllers.Admin
 {
@@ -11,10 +12,12 @@ namespace SFERS.Controllers.Admin
     [Authorize(Policy = "AdminOnly")]
     public class ReservationsController : Controller
     {
-        public ApplicationDbContext dbContext;
-        public ReservationsController(ApplicationDbContext context)
+        private ApplicationDbContext dbContext;
+        private ReservationManager reservationManager;
+        public ReservationsController(ApplicationDbContext context, ReservationManager reservationMgr)
         {
             dbContext = context;
+            reservationManager = reservationMgr;
         }
 
         public async Task<IActionResult> Index()
@@ -54,12 +57,14 @@ namespace SFERS.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> Approve(int id)
         {
-            var reservation = dbContext.Reservations.Find(id);
-            if (reservation != null)
+            try
             {
-                reservation.Status = ReservationStatus.Approved;
-                await dbContext.SaveChangesAsync();
-                await LogReservation(reservation.Id);
+                await reservationManager.ApproveReservation(id);
+                await LogReservation(id);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
             }
             return RedirectToAction("Index");
         }
@@ -67,13 +72,13 @@ namespace SFERS.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> Decline(int id)
         {
-            var reservation = dbContext.Reservations.Find(id);
-            if (reservation != null)
+            try {
+                await reservationManager.RejectReservation(id);
+            } catch (Exception ex)
             {
-                reservation.Status = ReservationStatus.Declined;
-                await dbContext.SaveChangesAsync();
+                TempData["Error"] = ex.Message;
             }
-            // TODO: Update reservation status to Declined
+
             return RedirectToAction("Index");
         }
 

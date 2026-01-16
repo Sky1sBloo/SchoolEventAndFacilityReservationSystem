@@ -14,20 +14,31 @@
     @foreach (var item in Model)
     {
         <div class="col-md-4 mb-3">
-            <div class="card h-100 border-start border-4 @(item.Status == "Approved" ? "border-success" : item.Status == "Ongoing" ? "border-primary" : "border-warning")">
+            <div
+                class="card h-100 border-start border-4 @(item.Status == "Approved" ? "border-success" : item.Status == "Declined" ? "border-danger" : "border-warning")">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="card-title mb-0">@item.RoomName</h5>
-                        <span class="badge @(item.Status == "Approved" ? "bg-success" : item.Status == "Ongoing" ? "bg-primary" : "bg-warning text-dark")">@item.Status</span>
+                        @if (item.Status == "Approved")
+                        {
+                            <i class="fas fa-check-circle text-success" title="Approved"></i>
+                        }
+                        else if (item.Status == "Declined")
+                        {
+                            <i class="fas fa-times-circle text-danger" title="Declined"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-clock text-warning" title="Pending"></i>
+                        }
                     </div>
                     <p class="card-text text-muted">
                         <i class="fas fa-calendar me-2"></i>@item.Date.ToShortDateString()<br>
                         <i class="fas fa-clock me-2"></i>@item.TimeSlot
                     </p>
                     <p class="small"><strong>Purpose:</strong> @item.Purpose</p>
-                </div>   
+                </div>
             </div>
         </div>
     }
 </div>
-

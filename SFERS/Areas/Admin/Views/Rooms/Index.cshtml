@@ -21,11 +21,25 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted small">ID: @room.Id</p>
+                    <span class="text-muted small fw-bold">Equipment: </span>
                     <div class="d-flex flex-wrap gap-1 mb-3">
-                        <span class="text-muted small">Equipment: </span>
                         @foreach (var item in room.Equipment ?? Enumerable.Empty<string>())
                         {
                             <span class="badge bg-secondary">@item</span>
+                        }
+                    </div>
+                    <div class="d-flex flex-column flex-wrap gap-1">
+                        <span class="text-muted small fw-bold">Reservations: </span>
+                        @if (room.Reservations != null && room.Reservations.Count > 0)
+                        {
+                            @foreach (var reservation in room.Reservations)
+                            {
+                                <span class="text-muted small">@reservation</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted small"> No Upcoming Reservations</span>
                         }
                     </div>
                 </div>

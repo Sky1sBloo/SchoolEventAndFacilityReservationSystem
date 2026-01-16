@@ -27,12 +27,16 @@ namespace SFERS.Controllers.Admin
             foreach (var room in rooms)
             {
                 var equipment = await dbContext.Equipments.Where(e => e.RoomId == room.Id).ToListAsync();
+                var futureReservations = await dbContext.Reservations
+                    .Where(r => r.RoomId == room.Id && r.Date > DateTime.Now)
+                    .ToListAsync();
                 roomViewModels.Rooms.Add(new RoomViewModel
                 {
                     Id = room.Id,
                     Name = room.Name,
                     Capacity = room.Capacity,
-                    IsAvailable = true,  // TODO: Add logic by checking reservation
+                    IsAvailable = true,  // TODO: Add logic by checking reservation,
+                    Reservations = futureReservations.Select(r => $"{r.Date:d} {r.StartTime}-{r.EndTime}").ToList(), 
                     Equipment = equipment.Select(e => e.Name).ToList()
                 });
             }

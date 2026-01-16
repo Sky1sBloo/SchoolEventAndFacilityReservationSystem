@@ -16,6 +16,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddDbContext<SFERS.Data.ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SFERS_Db")));
 
+builder.Services.AddScoped<SFERS.Utilities.ReservationManager>();
+
 // Add authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
